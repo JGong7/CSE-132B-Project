@@ -1,7 +1,7 @@
 package src;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
 
 public class Main {
@@ -26,25 +26,18 @@ public class Main {
             }
 
             Statement stmt = conn.createStatement();
-            String sql = "CREATE TABLE Faculty (" +
-             "ID INT PRIMARY KEY     NOT NULL," +
-             "NAME           TEXT    NOT NULL," +
-             "AGE            INT     NOT NULL," +
-             "ADDRESS        CHAR(50)," +
-             "SALARY         REAL )";
-            stmt.executeUpdate(sql);
-
-            // After creating the table
-            String checkTableExists = "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'faculty')";
-            ResultSet rs = stmt.executeQuery(checkTableExists);
-            if (rs.next()) {
-                boolean exists = rs.getBoolean(1);
-                if (exists) {
-                    System.out.println("Table created successfully");
-                } else {
-                    System.out.println("Table creation failed");
-                }
+            
+            // Create all the tables by init_db.sql
+            String filePath = "../sql/init_db.sql";
+            String sql = null;
+            try {
+                sql = new String(Files.readAllBytes(Paths.get(filePath)));
+            } catch (IOException e) {
+                System.out.println("Failed to read SQL file: " + e.getMessage());
+                e.printStackTrace();
             }
+            stmt.executeUpdate(sql);
+            System.out.println("Tables created successfully!");
         
             // Close the connection
             conn.close();
