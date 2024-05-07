@@ -1,3 +1,4 @@
+package src;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -17,6 +18,13 @@ public class Main {
 
             // Establish the connection
             Connection conn = DriverManager.getConnection(url, user, password);
+            // If connection is successfully established, print a message
+            if (conn != null) {
+                System.out.println("Connected to the database!");
+            } else {
+                System.out.println("Failed to make connection!");
+            }
+
             Statement stmt = conn.createStatement();
             String sql = "CREATE TABLE Faculty (" +
              "ID INT PRIMARY KEY     NOT NULL," +
@@ -38,13 +46,6 @@ public class Main {
                 }
             }
         
-            // If connection is successfully established, print a message
-            if (conn != null) {
-                System.out.println("Connected to the database!");
-            } else {
-                System.out.println("Failed to make connection!");
-            }
-
             // Close the connection
             conn.close();
         } catch (ClassNotFoundException ex) {
