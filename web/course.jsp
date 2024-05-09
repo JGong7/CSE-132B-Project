@@ -22,6 +22,9 @@
             color: red;
             margin-left: 5px;
         }
+        .checkbox-group {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -37,10 +40,28 @@
         </div>
         <div class="input-group">
             <label for="labRequired">Requires Lab Work:</label>
-            <select id="labRequired" name="labRequired">
-                <option value="true">True</option>
+            <select id="labRequired" name="labRequired" required>
                 <option value="false">False</option>
+                <option value="true">True</option>
             </select>
+        </div>
+        <div class="checkbox-group">
+            <label>Grade Options:</label><br>
+            <input type="checkbox" id="gradeLetter" name="gradeOptions[]" value="Letter">
+            <label for="gradeLetter">Letter</label><br>
+            <input type="checkbox" id="gradePassNoPass" name="gradeOptions[]" value="Pass/No Pass">
+            <label for="gradePassNoPass">Pass/No Pass</label>
+        </div>
+        <div class="checkbox-group">
+            <label>Available Units:</label><br>
+            <input type="checkbox" id="unit1" name="availableUnits[]" value="1">
+            <label for="unit1">1</label><br>
+            <input type="checkbox" id="unit2" name="availableUnits[]" value="2">
+            <label for="unit2">2</label><br>
+            <input type="checkbox" id="unit4" name="availableUnits[]" value="4">
+            <label for="unit4">4</label><br>
+            <input type="checkbox" id="unit6" name="availableUnits[]" value="6">
+            <label for="unit6">6</label>
         </div>
         <div id="prerequisitesContainer">
             <label>Prerequisites:</label>
@@ -55,7 +76,7 @@
             var container = document.getElementById('prerequisitesContainer');
             var inputGroup = document.createElement('div');
             inputGroup.className = 'input-group';
-            inputGroup.innerHTML = '<input type="text" name="prerequisites[]" placeholder="Enter prerequisite course number">'
+            inputGroup.innerHTML = '<input type="text" name="prerequisites[]" placeholder="Enter prerequisite course number" required>'
                                  + '<button type="button" class="remove-btn" onclick="removePrerequisiteInput(this)">Remove</button>';
             container.appendChild(inputGroup);
         }

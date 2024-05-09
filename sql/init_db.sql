@@ -33,17 +33,11 @@ CREATE TABLE Undergraduate_student (
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
 );
 
--- Graduate student
-CREATE TABLE Graduate_student (
-    student_id CHAR(9) PRIMARY KEY,
-    department VARCHAR(50) NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
-);
-
 -- BSMS student
 CREATE TABLE BSMS_student (
     student_id CHAR(9) PRIMARY KEY,
     college VARCHAR(25) NOT NULL,
+    department VARCHAR(50) NOT NULL,
     plan VARCHAR(50) NOT NULL,
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
 );
@@ -51,6 +45,7 @@ CREATE TABLE BSMS_student (
 -- Master student
 CREATE TABLE Master_student (
     student_id CHAR(9) PRIMARY KEY,
+    department VARCHAR(50) NOT NULL,
     plan VARCHAR(50) NOT NULL,
     FOREIGN KEY (student_id) REFERENCES Student(student_id)
 );
@@ -58,6 +53,7 @@ CREATE TABLE Master_student (
 -- PhD student
 CREATE TABLE Phd_student (
     student_id CHAR(9) PRIMARY KEY,
+    department VARCHAR(50) NOT NULL,
     candidacy_status BOOLEAN NOT NULL,
     advisor VARCHAR(50),
     FOREIGN KEY (student_id) REFERENCES Student(student_id),
@@ -207,11 +203,12 @@ CREATE TABLE Prerequisite (
 
 -- Class
 CREATE TABLE Class (
-    class_id SERIAL PRIMARY KEY,
-    course_number VARCHAR(50) NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    year INT NOT NULL,
-    quarter VARCHAR(50) NOT NULL,
+    class_id SERIAL,
+    course_number VARCHAR(50),
+    year INT,
+    quarter VARCHAR(50),
+    title VARCHAR(255),
+    PRIMARY KEY (course_number, year, quarter, title),
     FOREIGN KEY (course_number) REFERENCES Course(course_number)
 );
 
@@ -226,7 +223,7 @@ CREATE TABLE Teaching_schedule (
 
 -- Section
 CREATE TABLE Section (
-    section_id SERIAL PRIMARY KEY,
+    section_id CHAR(3) PRIMARY KEY,
     class_id INT NOT NULL,
     professor VARCHAR(50) NOT NULL,
     enrollment_limit INT NOT NULL,
@@ -238,15 +235,18 @@ CREATE TABLE Section (
 CREATE TABLE Student_take_class (
     student_id CHAR(9),
     class_id INT,
+    section_id CHAR(3),
     grade CHAR(2) NOT NULL,
-    PRIMARY KEY (student_id, class_id),
+    PRIMARY KEY (student_id, class_id, section_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    FOREIGN KEY (class_id) REFERENCES Class(class_id)
+    FOREIGN KEY (class_id) REFERENCES Class(class_id),
+    FOREIGN KEY (section_id) REFERENCES Section(section_id)
 );
 
 -- Enrollment
 CREATE TABLE Enrollment (
     student_id CHAR(9),
+    class_id INT,
     section_id INT,
     enrollment_type VARCHAR(50) NOT NULL,
     grading_option VARCHAR(50) NOT NULL,
@@ -259,6 +259,7 @@ CREATE TABLE Enrollment (
 
 -- Meeting
 CREATE TABLE Meeting (
+    class_id INT,
     section_id INT,
     meeting_id CHAR(3),
     type VARCHAR(50) NOT NULL,
