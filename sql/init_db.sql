@@ -203,13 +203,13 @@ CREATE TABLE Prerequisite (
 
 -- Class
 CREATE TABLE Class (
-    class_id SERIAL,
-    course_number VARCHAR(50),
-    year INT,
-    quarter VARCHAR(50),
-    title VARCHAR(255),
-    PRIMARY KEY (course_number, year, quarter, title),
-    FOREIGN KEY (course_number) REFERENCES Course(course_number)
+    class_id SERIAL PRIMARY KEY,
+    course_number VARCHAR(50) NOT NULL,
+    year INT NOT NULL,
+    quarter VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    FOREIGN KEY (course_number) REFERENCES Course(course_number),
+    UNIQUE (course_number, year, quarter, title) -- Ensures combination is unique, but doesn't burden the primary key
 );
 
 -- Teaching schedule
@@ -247,7 +247,7 @@ CREATE TABLE Student_take_class (
 CREATE TABLE Enrollment (
     student_id CHAR(9),
     class_id INT,
-    section_id INT,
+    section_id CHAR(3),
     enrollment_type VARCHAR(50) NOT NULL,
     grading_option VARCHAR(50) NOT NULL,
     units INT NOT NULL,
@@ -260,7 +260,7 @@ CREATE TABLE Enrollment (
 -- Meeting
 CREATE TABLE Meeting (
     class_id INT,
-    section_id INT,
+    section_id CHAR(3),
     meeting_id CHAR(3),
     type VARCHAR(50) NOT NULL,
     room VARCHAR(255) NOT NULL,
@@ -276,7 +276,7 @@ CREATE TABLE Meeting (
 
 -- Days of week
 CREATE TABLE Days_of_week (
-    section_id INT,
+    section_id CHAR(3),
     meeting_id CHAR(3),
     days VARCHAR(50),
     PRIMARY KEY (section_id, meeting_id, days),

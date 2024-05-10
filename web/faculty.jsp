@@ -9,7 +9,7 @@
     <h2>Enter Faculty Details</h2>
     <form action="../process_form/process_faculty.jsp" method="POST">
         <div>
-            <label for="name">Faculy Name:</label>
+            <label for="name">Faculty Name:</label>
             <input type="text" id="name" name="name" required>
         </div>
         <div>
