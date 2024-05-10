@@ -19,7 +19,7 @@
 </head>
 <body>
     <h2>Student Entry Form</h2>
-    <form action="SubmitStudentServlet" method="POST">
+    <form action="../process_form/process_student.jsp" method="POST">
         <div class="input-group">
             <label for="studentType">Student Type:</label>
             <select id="studentType" name="studentType" onchange="showRelevantFields()">

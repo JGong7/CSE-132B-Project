@@ -19,7 +19,7 @@
 </head>
 <body>
     <h2>Review Session Entry Form</h2>
-    <form action="SubmitReviewSessionServlet" method="POST">
+    <form action="../process_form/process_review_session.jsp" method="POST">
         <div class="input-group">
             <label for="courseNumber">Course Number:</label>
             <input type="text" id="courseNumber" name="courseNumber" required>
@@ -35,10 +35,6 @@
         <div class="input-group">
             <label for="quarter">Quarter:</label>
             <input type="text" id="quarter" name="quarter" required>
-        </div>
-        <div class="input-group">
-            <label for="type">Session Type:</label>
-            <input type="text" id="type" name="type" required>
         </div>
         <div class="input-group">
             <label for="room">Room:</label>

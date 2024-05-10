@@ -29,7 +29,7 @@
 </head>
 <body>
     <h2>Course Entry Form</h2>
-    <form action="SubmitCourseServlet" method="POST">
+    <form action="../process_form/process_course.jsp" method="POST">
         <div class="input-group">
             <label for="courseNumber">Course Number:</label>
             <input type="text" id="courseNumber" name="courseNumber" required>

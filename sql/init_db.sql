@@ -15,7 +15,7 @@ CREATE TABLE Student (
     first_name VARCHAR(50) NOT NULL,
     middle_name VARCHAR(50),
     last_name VARCHAR(50) NOT NULL,
-    ssn CHAR(11),
+    ssn CHAR(11) UNIQUE,
     residential_status VARCHAR(50),
     enrolled BOOLEAN NOT NULL
 );
@@ -223,11 +223,12 @@ CREATE TABLE Teaching_schedule (
 
 -- Section
 CREATE TABLE Section (
-    section_id CHAR(3) PRIMARY KEY,
-    class_id INT NOT NULL,
+    section_id CHAR(3),
+    class_id INT,
     professor VARCHAR(50) NOT NULL,
     enrollment_limit INT NOT NULL,
-    FOREIGN KEY (class_id) REFERENCES Class(class_id),
+    PRIMARY KEY (section_id, class_id),
+    FOREIGN KEY (class_id) REFERENCES Class(class_id) ON DELETE CASCADE,
     FOREIGN KEY (professor) REFERENCES Faculty(name)
 );
 
@@ -239,8 +240,7 @@ CREATE TABLE Student_take_class (
     grade CHAR(2) NOT NULL,
     PRIMARY KEY (student_id, class_id, section_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    FOREIGN KEY (class_id) REFERENCES Class(class_id),
-    FOREIGN KEY (section_id) REFERENCES Section(section_id)
+    FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
 
 -- Enrollment
@@ -252,16 +252,16 @@ CREATE TABLE Enrollment (
     grading_option VARCHAR(50) NOT NULL,
     units INT NOT NULL,
     enroll_order SERIAL NOT NULL,
-    PRIMARY KEY (student_id, section_id),
+    PRIMARY KEY (student_id, class_id, section_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    FOREIGN KEY (section_id) REFERENCES Section(section_id)
+    FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
 
 -- Meeting
 CREATE TABLE Meeting (
     class_id INT,
     section_id CHAR(3),
-    meeting_id CHAR(3),
+    meeting_id SERIAL,
     type VARCHAR(50) NOT NULL,
     room VARCHAR(255) NOT NULL,
     building VARCHAR(255) NOT NULL,
@@ -270,15 +270,16 @@ CREATE TABLE Meeting (
     time_end TIME NOT NULL,
     date_start DATE NOT NULL,
     date_end DATE NOT NULL,
-    PRIMARY KEY (section_id, meeting_id),
-    FOREIGN KEY (section_id) REFERENCES Section(section_id)
+    PRIMARY KEY (class_id, section_id, meeting_id),
+    FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
 
 -- Days of week
 CREATE TABLE Days_of_week (
+    class_id INT,
     section_id CHAR(3),
-    meeting_id CHAR(3),
+    meeting_id INT,
     days VARCHAR(50),
-    PRIMARY KEY (section_id, meeting_id, days),
-    FOREIGN KEY (section_id, meeting_id) REFERENCES Meeting(section_id, meeting_id)
+    PRIMARY KEY (class_id, section_id, meeting_id, days),
+    FOREIGN KEY (class_id, section_id, meeting_id) REFERENCES Meeting(class_id, section_id, meeting_id) ON DELETE CASCADE
 );
