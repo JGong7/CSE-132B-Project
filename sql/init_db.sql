@@ -147,7 +147,7 @@ CREATE TABLE Degree (
     degree_name VARCHAR(255) NOT NULL,
     type VARCHAR(50) NOT NULL,
     department VARCHAR(255) NOT NULL,
-    concentration VARCHAR(255) NOT NULL,
+    concentration VARCHAR(255),
     upper_credits INT NOT NULL,
     lower_credits INT NOT NULL
 );
