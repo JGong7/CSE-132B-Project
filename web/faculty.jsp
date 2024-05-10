@@ -18,7 +18,7 @@
         </div>
         <div id="departmentContainer">
             <label>Department:</label>
-            <input type="text" name="deparments[]">
+            <input type="text" name="departments[]" required>
         </div>
         <button type="button" onclick="addDepartmentInput()">Add Department</button>
         
@@ -30,7 +30,7 @@
             var container = document.getElementById('departmentContainer');
             var inputGroup = document.createElement('div');
             inputGroup.className = 'input-group';
-            inputGroup.innerHTML = '<input type="text" name="deparments[]" placeholder="Enter department">'
+            inputGroup.innerHTML = '<input type="text" name="departments[]" placeholder="Enter department">'
                                  + '<button type="button" class="remove-btn" onclick="removeDepartmentInput(this)">Remove</button>';
             container.appendChild(inputGroup);
         }

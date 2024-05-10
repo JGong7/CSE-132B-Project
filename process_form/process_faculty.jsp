@@ -7,9 +7,13 @@
 <%
     String name = request.getParameter("name");
     String title = request.getParameter("title");
+    String[] departments = request.getParameterValues("departments[]");
 
     out.println("Received name: " + name + "<br>");
     out.println("Received title: " + title + "<br>");
+    for (String department : departments){
+        out.println("Received department: " + department + "<br>");
+    }
     String url = "jdbc:postgresql://cse132b.cxa6600i8ci8.us-east-2.rds.amazonaws.com:5432/postgres";
     String user = "postgres";
     String password = "James2085";
@@ -31,11 +35,25 @@
     pstmt.setString(1, name);
     pstmt.setString(2, title);
     int rowsAffected = pstmt.executeUpdate();
-
+    out.println("Inserting into Faculty");
     if (rowsAffected > 0) {
         out.println("Insert successful. " + rowsAffected + " row(s) affected.");
     } else {
         out.println("Insert failed. No rows affected.");
+    }
+
+    for (String department : departments){
+        sql = "INSERT INTO Faculty_department (name, department) VALUES(?, ?)";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, name);
+        pstmt.setString(2, department);
+        rowsAffected = pstmt.executeUpdate();
+        out.println("Inserting into Faculty_department");
+        if (rowsAffected > 0) {
+            out.println("Insert successful. " + rowsAffected + " row(s) affected.");
+        } else {
+            out.println("Insert failed. No rows affected.");
+        }
     }
 %>
 <h1>Faculty Information</h1>
