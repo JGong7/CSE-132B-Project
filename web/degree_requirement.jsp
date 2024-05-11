@@ -28,6 +28,10 @@
     <h2>Degree Requirements Entry Form</h2>
     <form action="../process_form/process_degree_requirement.jsp" method="POST">
         <div class="input-group">
+            <label for="degreeId">Degree Code:</label>
+            <input type="text" id="degreeId" name="degreeId" required>
+        </div>
+        <div class="input-group">
             <label for="degreeName">Degree Name:</label>
             <input type="text" id="degreeName" name="degreeName" required>
         </div>

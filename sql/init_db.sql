@@ -143,7 +143,7 @@ CREATE TABLE Payment_method (
 
 -- Degree
 CREATE TABLE Degree (
-    degree_id SERIAL PRIMARY KEY,
+    degree_id CHAR(4) PRIMARY KEY,
     degree_name VARCHAR(255) NOT NULL,
     type VARCHAR(50) NOT NULL,
     department VARCHAR(255) NOT NULL,
@@ -155,7 +155,7 @@ CREATE TABLE Degree (
 -- Pursuing
 CREATE TABLE Pursuing (
     student_id CHAR(9),
-    degree_id INT,
+    degree_id CHAR(4),
     PRIMARY KEY (student_id, degree_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id),
     FOREIGN KEY (degree_id) REFERENCES Degree(degree_id)
