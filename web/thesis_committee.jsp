@@ -19,7 +19,7 @@
 </head>
 <body>
     <h1>Thesis Committee Entry Form</h1>
-    <form action="submitForm.jsp" method="post">
+    <form action="../process_form/process_thesis_committee.jsp" method="post">
         <div id="input-group">
             <label for="student_id">Student ID:</label>
             <input type="text" id="student_id" name="student_id" maxlength="9" required>
