@@ -66,48 +66,49 @@
         <!-- Undergraduate Fields -->
         <div id="undergraduateFields" class="hidden">
             <div class="input-group">
-                <label for="college">College:</label>
-                <input type="text" id="college" name="college">
+                <label for="undergraduateCollege">College:</label>
+                <input type="text" id="undergraduateCollege" name="undergraduateCollege">
             </div>
         </div>
 
         <!-- BSMS Fields -->
         <div id="bsmsFields" class="hidden">
             <div class="input-group">
-                <label for="college">College:</label>
-                <input type="text" id="college" name="college">
+                <label for="bsmsCollege">College:</label>
+                <input type="text" id="bsmsCollege" name="bsmsCollege">
             </div>
             <div class="input-group">
-                <label for="department">Department:</label>
-                <input type="text" id="department" name="department">
+                <label for="bsmsDepartment">Department:</label>
+                <input type="text" id="bsmsDepartment" name="bsmsDepartment">
             </div>
             <div class="input-group">
-                <label for="plan">Plan:</label>
-                <input type="text" id="plan" name="plan">
+                <label for="bsmsPlan">Plan:</label>
+                <input type="text" id="bsmsPlan" name="bsmsPlan">
             </div>
         </div>
 
         <!-- Master Fields -->
         <div id="masterFields" class="hidden">
             <div class="input-group">
-                <label for="department">Department:</label>
-                <input type="text" id="department" name="department">
+                <label for="masterDepartment">Department:</label>
+                <input type="text" id="masterDepartment" name="masterDepartment">
             </div>
             <div class="input-group">
-                <label for="plan">Plan:</label>
-                <input type="text" id="plan" name="plan">
+                <label for="masterPlan">Plan:</label>
+                <input type="text" id="masterPlan" name="masterPlan">
             </div>
         </div>
 
         <!-- PhD Fields -->
         <div id="phdFields" class="hidden">
             <div class="input-group">
-                <label for="department">Department:</label>
-                <input type="text" id="department" name="department">
+                <label for="phdDepartment">Department:</label>
+                <input type="text" id="phdDepartment" name="phdDepartment">
             </div>
             <div class="input-group">
                 <label for="candidacyStatus">Candidacy Status:</label>
                 <select id="candidacyStatus" name="candidacyStatus" required>
+                    <option value="select">-- Select Status --</option>
                     <option value="pre-candidacy">Pre-Candidacy</option>
                     <option value="candidate">Candidate</option>
                 </select>

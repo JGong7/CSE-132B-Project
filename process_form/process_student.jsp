@@ -15,11 +15,7 @@
     String residentialStatus = request.getParameter("residentialStatus");
     boolean enrolled = "true".equals(request.getParameter("enrolled"));
     String studentType = request.getParameter("studentType");
-    String college = request.getParameter("college");
-    String department = request.getParameter("department");
-    String plan = request.getParameter("plan");
-    String candidacyStatus = request.getParameter("candidacyStatus");
-    String advisor = request.getParameter("advisor");
+    out.println("Student Type: " + studentType + "<br>");
 
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -59,55 +55,86 @@
         }
 
         // Insert into specific student type table
-        switch (studentType) {
-            case "Undergraduate":
-                out.println("Inserting into Undergraduate_student with college: " + college);
+        try {
+            if ("Undergraduate".equals(studentType)) {
+                String college = request.getParameter("undergraduateCollege");
+                out.println("Inserting into Undergraduate_student with college: " + college + "<br>");
+
                 sql = "INSERT INTO Undergraduate_student (student_id, college) VALUES (?, ?)";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, studentId);
                 pstmt.setString(2, college);
-                pstmt.executeUpdate();
-                break;
-            case "BSMS":
-                out.println("Inserting into BSMS_student with college: " + college + " and department: " + department + " and plan: " + plan);
+                int row = pstmt.executeUpdate();
+                if (row > 0) {
+                    out.println("Insert successful. " + row + " row(s) affected.");
+                } else {
+                    out.println("Insert failed. No rows affected.");
+                }
+            } else if ("BSMS".equals(studentType)) {
+                String college = request.getParameter("bsmsCollege");
+                String department = request.getParameter("bsmsDepartment");
+                String plan = request.getParameter("bsmsPlan");
+                out.println("Inserting into BSMS_student with college: " + college + ", department: " + department + ", plan: " + plan + "<br>");
+
                 sql = "INSERT INTO BSMS_student (student_id, college, department, plan) VALUES (?, ?, ?, ?)";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, studentId);
                 pstmt.setString(2, college);
                 pstmt.setString(3, department);
                 pstmt.setString(4, plan);
-                pstmt.executeUpdate();
-                break;
-            case "Master":
-                out.println("Inserting into Master_student with plan: " + plan + " and department: " + department);
-                sql = "INSERT INTO Master_student (student_id, department, plan) VALUES (?, ?, ?)";
+                int row = pstmt.executeUpdate();
+                if (row > 0) {
+                    out.println("Insert successful. " + row + " row(s) affected.");
+                } else {
+                    out.println("Insert failed. No rows affected.");
+                }
+            } else if ("Master".equals(studentType)) {
+                String department = request.getParameter("masterDepartment");
+                String plan = request.getParameter("masterPlan");
+                out.println("Inserting into Master_student with plan: " + plan + ", department: " + department + "<br>");
+
+                sql = "INSERT INTO Master_student (student_id, plan, department) VALUES (?, ?, ?)";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, studentId);
-                pstmt.setString(2, department);
-                pstmt.setString(3, plan);
-                pstmt.executeUpdate();
-                break;
-            case "PhD":
-                out.println("Inserting into Phd_student with department: " + department + " and candidacy status: " + candidacyStatus + " and advisor: " + advisor);
+                pstmt.setString(2, plan);
+                pstmt.setString(3, department);
+                int row = pstmt.executeUpdate();
+                if (row > 0) {
+                    out.println("Insert successful. " + row + " row(s) affected.");
+                } else {
+                    out.println("Insert failed. No rows affected.");
+                }
+            } else if ("PhD".equals(studentType)) {
+                String department = request.getParameter("phdDepartment");
+                String candidacyStatus = request.getParameter("candidacyStatus");
+                String advisor = request.getParameter("advisor");
+                out.println("Inserting into PhD_student with department: " + department + ", candidacy status: " + candidacyStatus + ", advisor: " + advisor + "<br>");
+
                 sql = "INSERT INTO Phd_student (student_id, department, candidacy_status, advisor) VALUES (?, ?, ?, ?)";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, studentId);
                 pstmt.setString(2, department);
-                pstmt.setBoolean(3, "candidate".equals(candidacyStatus));
+                pstmt.setBoolean(3, candidacyStatus.equals("Candidate"));
                 pstmt.setString(4, advisor);
-                pstmt.executeUpdate();
-                break;
-        }
-        out.println("<p>Student data successfully saved!</p>");
+                int row = pstmt.executeUpdate();
+                if (row > 0) {
+                    out.println("Insert successful. " + row + " row(s) affected.");
+                } else {
+                    out.println("Insert failed. No rows affected.");
+                }
+            } else {
+                out.println("Error: Invalid student type");
+            }
+            out.println("<p>Student data successfully saved!</p>");
 
-    // } catch (Exception e) {
-    //     out.println("<p>Error: caught exception in try catch</p>");
-    //     out.println("<p>Error: " + e.getMessage() + "</p>");
-    //     e.printStackTrace();
-    // } finally {
-    //     if (pstmt != null) { pstmt.close(); }
-    //     if (conn != null) { conn.close(); }
-    // }
+        } catch (Exception e) {
+            out.println("<p>Error: caught exception in try/catch</p>");
+            out.println("<p>Error: " + e.getMessage() + "</p>");
+            e.printStackTrace();
+        } finally {
+            if (pstmt != null) { pstmt.close(); }
+            if (conn != null) { conn.close(); }
+        }
 %>
 </body>
 </html>

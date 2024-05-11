@@ -54,7 +54,7 @@ CREATE TABLE Master_student (
 CREATE TABLE Phd_student (
     student_id CHAR(9) PRIMARY KEY,
     department VARCHAR(50) NOT NULL,
-    candidacy_status BOOLEAN NOT NULL,
+    candidacy_status VARCHAR(15) NOT NULL,
     advisor VARCHAR(50),
     FOREIGN KEY (student_id) REFERENCES Student(student_id),
     FOREIGN KEY (advisor) REFERENCES Faculty(name)
