@@ -53,6 +53,13 @@
                 <option value="true">True</option>
             </select>
         </div>
+        <div class="input-group">
+            <label for="consentRequired">Requires Instructor Consent:</label>
+            <select id="consentRequired" name="consentRequired" required>
+                <option value="false">False</option>
+                <option value="true">True</option>
+            </select>
+        </div>
         <div class="checkbox-group">
             <label>Grade Options:</label><br>
             <input type="checkbox" id="gradeLetter" name="gradeOptions[]" value="Letter">

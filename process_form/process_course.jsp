@@ -13,6 +13,7 @@
     String[] gradeOptions = request.getParameterValues("gradeOptions[]");
     String[] availableUnits = request.getParameterValues("availableUnits[]");
     String[] prerequisites = request.getParameterValues("prerequisites[]");
+    boolean consentRequired = Boolean.parseBoolean(request.getParameter("consentRequired"));
     String action = request.getParameter("action");
 
     Connection conn = null;
@@ -35,11 +36,12 @@
 
         if (action.equals("add")){
             // Insert into Course table
-            String sql = "INSERT INTO Course (course_number, department, require_lab_work) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO Course (course_number, department, require_lab_work, require_consent_of_instructor) VALUES (?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, courseNumber);
             pstmt.setString(2, department);
             pstmt.setBoolean(3, labRequired);
+            pstmt.setBoolean(4, consentRequired);
             pstmt.executeUpdate();
 
             // Insert into Units table

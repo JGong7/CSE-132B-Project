@@ -19,6 +19,7 @@
     String[] grading_options = request.getParameterValues("grading_option[]");
     String[] units = request.getParameterValues("units[]");    
     String[] grades = request.getParameterValues("grade[]");
+    String action = request.getParameter("action");
 
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -36,48 +37,125 @@
         int gradeIndex = 0;
         
 
-        //add into Student_take_class no matter what, then add to enrollment if currently taking.
-        // Loop over each class entry
-        for (int i = 0; i < courseNumbers.length; i++) {
-            String select_sql = "SELECT class_id FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
-            pstmt = conn.prepareStatement(select_sql);
+        if (action.equals("add")){
+            //add into Student_take_class no matter what, then add to enrollment if currently taking.
+            // Loop over each class entry
+            for (int i = 0; i < courseNumbers.length; i++) {
+                String select_sql = "SELECT class_id FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
+                pstmt = conn.prepareStatement(select_sql);
 
-            pstmt.setString(1, courseNumbers[i]);
-            pstmt.setInt(2, Integer.parseInt(years[i]));
-            pstmt.setString(3, quarters[i]);
-            pstmt.setString(4, titles[i]);
+                pstmt.setString(1, courseNumbers[i]);
+                pstmt.setInt(2, Integer.parseInt(years[i]));
+                pstmt.setString(3, quarters[i]);
+                pstmt.setString(4, titles[i]);
 
-            ResultSet result = pstmt.executeQuery();
-            int class_id = -1;
-            while (result.next()){
-                class_id = result.getInt("class_id");            
-            }
-            if (class_id == -1){
-                throw new SQLException("No class found with the given parameters.");
-            }
-            if (!statuses[i].equals("taken")){
-                String enroll_sql = "INSERT INTO Enrollment (student_id, class_id, section_id, enrollment_type, grading_option, units) VALUES (?, ?, ?, ?, ?, ?)";
-                pstmt = conn.prepareStatement(enroll_sql);
+                ResultSet result = pstmt.executeQuery();
+                int class_id = -1;
+                while (result.next()){
+                    class_id = result.getInt("class_id");            
+                }
+                if (class_id == -1){
+                    throw new SQLException("No class found with the given parameters.");
+                }
+                if (!statuses[i].equals("taken")){
+                    String enroll_sql = "INSERT INTO Enrollment (student_id, class_id, section_id, enrollment_type, grading_option, units) VALUES (?, ?, ?, ?, ?, ?)";
+                    pstmt = conn.prepareStatement(enroll_sql);
+                    pstmt.setString(1, studentId);
+                    pstmt.setInt(2, class_id);
+                    pstmt.setString(3, sectionIds[i]);
+                    pstmt.setString(4, statuses[i]);
+                    pstmt.setString(5, grading_options[i]);
+                    pstmt.setInt(6, Integer.parseInt(units[i]));
+                    updates += pstmt.executeUpdate();
+                }
+                String sql = "INSERT INTO Student_take_class (student_id, class_id, section_id, grade) VALUES (?, ?, ?, ?)";
+                pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, studentId);
                 pstmt.setInt(2, class_id);
                 pstmt.setString(3, sectionIds[i]);
-                pstmt.setString(4, statuses[i]);
-                pstmt.setString(5, grading_options[i]);
-                pstmt.setInt(6, Integer.parseInt(units[i]));
+                if (statuses[i].equals("taken")){
+                    pstmt.setString(4, grades[gradeIndex]);
+                    gradeIndex ++;
+                }else{
+                    pstmt.setString(4, "IP");
+                }
                 updates += pstmt.executeUpdate();
             }
-            String sql = "INSERT INTO Student_take_class (student_id, class_id, section_id, grade) VALUES (?, ?, ?, ?)";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, studentId);
-            pstmt.setInt(2, class_id);
-            pstmt.setString(3, sectionIds[i]);
-            if (statuses[i].equals("taken")){
-                pstmt.setString(4, grades[gradeIndex]);
-                gradeIndex ++;
-            }else{
-                pstmt.setString(4, "IP");
+        }else if (action.equals("delete")){
+            for (int i = 0; i < courseNumbers.length; i++) {
+                String select_sql = "SELECT class_id FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
+                pstmt = conn.prepareStatement(select_sql);
+
+                pstmt.setString(1, courseNumbers[i]);
+                pstmt.setInt(2, Integer.parseInt(years[i]));
+                pstmt.setString(3, quarters[i]);
+                pstmt.setString(4, titles[i]);
+
+                ResultSet result = pstmt.executeQuery();
+                int class_id = -1;
+                while (result.next()){
+                    class_id = result.getInt("class_id");            
+                }
+                if (class_id == -1){
+                    throw new SQLException("No class found with the given parameters.");
+                }
+                if (!statuses[i].equals("taken")){
+                    String enroll_sql = "DELETE FROM Enrollment WHERE student_id = ? AND class_id = ? AND section_id = ?";
+                    pstmt = conn.prepareStatement(enroll_sql);
+                    pstmt.setString(1, studentId);
+                    pstmt.setInt(2, class_id);
+                    pstmt.setString(3, sectionIds[i]);
+                    updates += pstmt.executeUpdate();
+                }
+                String sql = "DELETE FROM Student_take_class WHERE student_id = ? AND class_id = ? AND section_id = ?";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, studentId);
+                pstmt.setInt(2, class_id);
+                pstmt.setString(3, sectionIds[i]);
+                updates += pstmt.executeUpdate();
             }
-            updates += pstmt.executeUpdate();
+        }else if (action.equals("update")){
+            for (int i = 0; i < courseNumbers.length; i++) {
+                String select_sql = "SELECT class_id FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
+                pstmt = conn.prepareStatement(select_sql);
+
+                pstmt.setString(1, courseNumbers[i]);
+                pstmt.setInt(2, Integer.parseInt(years[i]));
+                pstmt.setString(3, quarters[i]);
+                pstmt.setString(4, titles[i]);
+
+                ResultSet result = pstmt.executeQuery();
+                int class_id = -1;
+                while (result.next()){
+                    class_id = result.getInt("class_id");            
+                }
+                if (class_id == -1){
+                    throw new SQLException("No class found with the given parameters.");
+                }
+                if (!statuses[i].equals("taken")){
+                    String enroll_sql = "UPDATE Enrollment SET enrollment_type = ?, grading_option = ?, units = ? WHERE student_id = ? AND class_id = ? AND section_id = ?";
+                    pstmt = conn.prepareStatement(enroll_sql);
+                    pstmt.setString(4, studentId);
+                    pstmt.setInt(5, class_id);
+                    pstmt.setString(6, sectionIds[i]);
+                    pstmt.setString(1, statuses[i]);
+                    pstmt.setString(2, grading_options[i]);
+                    pstmt.setInt(3, Integer.parseInt(units[i]));
+                    updates += pstmt.executeUpdate();
+                }
+                String sql = "UPDATE Student_take_class SET grade = ? WHERE student_id = ? AND class_id = ? AND section_id = ?";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(2, studentId);
+                pstmt.setInt(3, class_id);
+                pstmt.setString(4, sectionIds[i]);
+                if (statuses[i].equals("taken")){
+                    pstmt.setString(1, grades[gradeIndex]);
+                    gradeIndex ++;
+                }else{
+                    pstmt.setString(1, "IP");
+                }
+                updates += pstmt.executeUpdate();
+            }
         }
 
         // Output success message
