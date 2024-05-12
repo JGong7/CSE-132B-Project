@@ -20,6 +20,14 @@
 <body>
     <h2>Enter Teaching Schedule Details</h2>
     <form action="../process_form/process_teaching_schedule.jsp" method="POST">
+        <div class="input-group">
+            <label for="action">Action:</label>
+            <select id="action" name="action">
+                <option value="add">Add</option>
+                <option value="update">Update</option>
+                <option value="delete">Delete</option>
+            </select>
+        </div>
         <div>
             <label for="name">Faculty Name:</label>
             <input type="text" id="name" name="name" required>

@@ -8,7 +8,8 @@
 </head>
 <body>
     <h1>Teaching Schedule Submission Results</h1>
-<%
+<% 
+    String action = request.getParameter("action");
     String facultyName = request.getParameter("name");
     String[] years = request.getParameterValues("year[]");
     String[] quarters = request.getParameterValues("quarter[]");
@@ -34,31 +35,77 @@
         String selectSql = "SELECT class_id FROM Class WHERE year = ? AND quarter = ? AND title = ? AND course_number = ?";
         selectStmt = conn.prepareStatement(selectSql);
 
-        // SQL to insert into Teaching_Schedule
-        String insertSql = "INSERT INTO Teaching_Schedule (faculty_name, class_id) VALUES (?, ?)";
-        pstmt = conn.prepareStatement(insertSql);
+        if (action.equals("add")){
+            // SQL to insert into Teaching_Schedule
+            String insertSql = "INSERT INTO Teaching_Schedule (name, class_id) VALUES (?, ?)";
+            pstmt = conn.prepareStatement(insertSql);
 
-        // Loop over each class entry
-        for (int i = 0; i < years.length; i++) {
-            // Set parameters to fetch class_id
-            selectStmt.setInt(1, Integer.parseInt(years[i]));
-            selectStmt.setString(2, quarters[i]);
-            selectStmt.setString(3, titles[i]);
-            selectStmt.setString(4, courseNumbers[i]);
-            ResultSet rs = selectStmt.executeQuery();
+            // Loop over each class entry
+            for (int i = 0; i < years.length; i++) {
+                // Set parameters to fetch class_id
+                selectStmt.setInt(1, Integer.parseInt(years[i]));
+                selectStmt.setString(2, quarters[i]);
+                selectStmt.setString(3, titles[i]);
+                selectStmt.setString(4, courseNumbers[i]);
+                ResultSet rs = selectStmt.executeQuery();
 
-            // Check if the class_id was found
-            if (rs.next()) {
-                int classId = rs.getInt("class_id");
-                
-                // Insert into Teaching_Schedule using the retrieved class_id
-                pstmt.setString(1, facultyName);
-                pstmt.setInt(2, classId);
-                updates += pstmt.executeUpdate();
+                // Check if the class_id was found
+                if (rs.next()) {
+                    int classId = rs.getInt("class_id");
+                    
+                    // Insert into Teaching_Schedule using the retrieved class_id
+                    pstmt.setString(1, facultyName);
+                    pstmt.setInt(2, classId);
+                    updates += pstmt.executeUpdate();
+                }
+            }
+            // Output success message
+            out.println("<p>Data successfully inserted for " + updates + " classes.</p>");
+        }else if (action.equals("delete")){
+            String deleteSql = "DELETE FROM Teaching_Schedule WHERE name = ? AND class_id = ?";
+            pstmt = conn.prepareStatement(deleteSql);
+
+            for (int i = 0; i < years.length; i++) {
+                // Set parameters to fetch class_id
+                selectStmt.setInt(1, Integer.parseInt(years[i]));
+                selectStmt.setString(2, quarters[i]);
+                selectStmt.setString(3, titles[i]);
+                selectStmt.setString(4, courseNumbers[i]);
+                ResultSet rs = selectStmt.executeQuery();
+
+                // Check if the class_id was found
+                if (rs.next()) {
+                    int classId = rs.getInt("class_id");
+                    
+                    // Insert into Teaching_Schedule using the retrieved class_id
+                    pstmt.setString(1, facultyName);
+                    pstmt.setInt(2, classId);
+                    updates += pstmt.executeUpdate();
+                }
+            }
+        }else if (action.equals("update")){
+            String updateSql = "UPDATE Teaching_Schedule SET name = ? WHERE class_id = ?";
+            pstmt = conn.prepareStatement(updateSql);
+
+            for (int i = 0; i < years.length; i++) {
+                // Set parameters to fetch class_id
+                selectStmt.setInt(1, Integer.parseInt(years[i]));
+                selectStmt.setString(2, quarters[i]);
+                selectStmt.setString(3, titles[i]);
+                selectStmt.setString(4, courseNumbers[i]);
+                ResultSet rs = selectStmt.executeQuery();
+
+                // Check if the class_id was found
+                if (rs.next()) {
+                    int classId = rs.getInt("class_id");
+                    
+                    // Insert into Teaching_Schedule using the retrieved class_id
+                    pstmt.setString(1, facultyName);
+                    pstmt.setInt(2, classId);
+                    updates += pstmt.executeUpdate();
+                }
             }
         }
-        // Output success message
-        out.println("<p>Data successfully inserted for " + updates + " classes.</p>");
     } catch (Exception e) {
         // Handle potential exceptions
         out.println("<p>Error while inserting data: " + e.getMessage() + "</p>");
