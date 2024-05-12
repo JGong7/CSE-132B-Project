@@ -91,7 +91,7 @@
                     pstmt.setString(2, studentId);
                     result2 = pstmt.executeUpdate();
                 } else {
-                    out.println("Don't need to delete from Undergraduate_student table.");
+                    out.println("Automatically deleted from Undergraduate_student table.");
                 }
             } else if ("BSMS".equals(studentType)) {
                 String college = request.getParameter("bsmsCollege");
@@ -115,7 +115,7 @@
                     pstmt.setString(4, studentId);
                     result2 = pstmt.executeUpdate();
                 } else {
-                    out.println("Don't need to delete from BSMS_student table.");
+                    out.println("Automatically deleted from BSMS_student table.");
                 }
             } else if ("Master".equals(studentType)) {
                 String department = request.getParameter("masterDepartment");
@@ -136,7 +136,7 @@
                     pstmt.setString(3, studentId);
                     result2 = pstmt.executeUpdate();
                 } else {
-                    out.println("Don't need to delete from Master_student table.");
+                    out.println("Automatically deleted from Master_student table.");
                 }
             } else if ("PhD".equals(studentType)) {
                 String department = request.getParameter("phdDepartment");
@@ -160,7 +160,7 @@
                     pstmt.setString(4, studentId);
                     result2 = pstmt.executeUpdate();
                 } else {
-                    out.println("Don't need to delete from PhD_student table.");
+                    out.println("Automatically deleted from PhD_student table.");
                 }
             } else {
                 out.println("Error: Invalid student type");

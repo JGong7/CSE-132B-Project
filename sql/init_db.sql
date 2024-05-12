@@ -73,6 +73,7 @@ CREATE TABLE Additional_phd_professors (
 CREATE TABLE Thesis_committee (
     student_id CHAR(9),
     professor VARCHAR(50),
+    is_external BOOLEAN NOT NULL,
     PRIMARY KEY (student_id, professor),
     FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE, 
     FOREIGN KEY (professor) REFERENCES Faculty(name) ON DELETE CASCADE
@@ -251,7 +252,6 @@ CREATE TABLE Enrollment (
     enrollment_type VARCHAR(50) NOT NULL,
     grading_option VARCHAR(50) NOT NULL,
     units INT NOT NULL,
-    enroll_order SERIAL NOT NULL,
     PRIMARY KEY (student_id, class_id, section_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
