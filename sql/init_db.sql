@@ -127,7 +127,6 @@ CREATE TABLE Payment_history (
     FOREIGN KEY (account_number) REFERENCES Account(account_number) ON DELETE CASCADE
 );
 
-
 -- Degree
 CREATE TABLE Degree (
     degree_id CHAR(4) PRIMARY KEY,

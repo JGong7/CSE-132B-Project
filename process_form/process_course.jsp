@@ -7,16 +7,19 @@
 </head>
 <body>
 <%
+    String action = request.getParameter("action");
+    int courseId = Integer.parseInt(request.getParameter("courseId"));
     String courseNumber = request.getParameter("courseNumber");
     String department = request.getParameter("department");
     boolean labRequired = Boolean.parseBoolean(request.getParameter("labRequired"));
+    boolean consentRequired = Boolean.parseBoolean(request.getParameter("consentOfInstructorRequired"));
     String[] gradeOptions = request.getParameterValues("gradeOptions[]");
     String[] availableUnits = request.getParameterValues("availableUnits[]");
     String[] prerequisites = request.getParameterValues("prerequisites[]");
-    String action = request.getParameter("action");
 
     Connection conn = null;
     PreparedStatement pstmt = null;
+    ResultSet rs = null;
 
     try {
         String url = "jdbc:postgresql://cse132b.cxa6600i8ci8.us-east-2.rds.amazonaws.com:5432/postgres";
@@ -24,107 +27,140 @@
         String password = "James2085";
 
         Class.forName("org.postgresql.Driver");
-
-        // Establish the connection
         conn = DriverManager.getConnection(url, user, password);
-        if (conn != null) {
-            out.println("Connected to the database!");
-        } else {
-            out.println("Failed to make connection!");
-        }
+        conn.setAutoCommit(false); // Transaction block start
 
-        if (action.equals("add")){
+        int result = 0;
+        if ("add".equals(action)) {
             // Insert into Course table
-            String sql = "INSERT INTO Course (course_number, department, require_lab_work) VALUES (?, ?, ?)";
-            pstmt = conn.prepareStatement(sql);
+            String sqlInsertCourse = "INSERT INTO Course (course_id, course_number, department, require_lab_work, require_consent_of_instructor) VALUES (?, ?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sqlInsertCourse);
+            pstmt.setInt(1, courseId);
+            pstmt.setString(2, courseNumber);
+            pstmt.setString(3, department);
+            pstmt.setBoolean(4, labRequired);
+            pstmt.setBoolean(5, consentRequired);
+            result = pstmt.executeUpdate();
+
+            // Insert units
+            if (availableUnits != null) {
+                String sqlInsertUnits = "INSERT INTO Units (course_id, unit) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sqlInsertUnits);
+                for (String unit : availableUnits) {
+                    pstmt.setInt(1, courseId);
+                    pstmt.setInt(2, Integer.parseInt(unit));
+                    pstmt.executeUpdate();
+                }
+            }
+
+            // Insert grade options
+            if (gradeOptions != null) {
+                String sqlInsertGradeOptions = "INSERT INTO Grade_option (course_id, option) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sqlInsertGradeOptions);
+                for (String option : gradeOptions) {
+                    pstmt.setInt(1, courseId);
+                    pstmt.setString(2, option);
+                    pstmt.executeUpdate();
+                }
+            }
+
+            // Insert prerequisites
+            if (prerequisites != null) {
+                String sqlInsertPrerequisites = "INSERT INTO Prerequisite (course_id, required_course_id) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sqlInsertPrerequisites);
+                for (String prereq : prerequisites) {
+                    pstmt.setInt(1, courseId);
+                    pstmt.setInt(2, Integer.parseInt(prereq)); // Assuming prereq is a course_id
+                    pstmt.executeUpdate();
+                }
+            }
+        } else if ("update".equals(action)) {
+            // Update course
+            String sqlUpdateCourse = "UPDATE Course SET course_number = ?, department = ?, require_lab_work = ?, require_consent_of_instructor = ? WHERE course_id = ?";
+            pstmt = conn.prepareStatement(sqlUpdateCourse);
             pstmt.setString(1, courseNumber);
             pstmt.setString(2, department);
             pstmt.setBoolean(3, labRequired);
-            pstmt.executeUpdate();
+            pstmt.setBoolean(4, consentRequired);
+            pstmt.setInt(5, courseId);
+            result = pstmt.executeUpdate();
 
-            // Insert into Units table
+            // Update units
             if (availableUnits != null) {
-                sql = "INSERT INTO Units (course_number, unit) VALUES (?, ?)";
-                pstmt = conn.prepareStatement(sql);
-                for (String unit : availableUnits) {
-                    pstmt.setString(1, courseNumber);
-                    pstmt.setInt(2, Integer.parseInt(unit));
-                    pstmt.executeUpdate();
-                }
-            }
-
-            // Insert into Grade_option table
-            if (gradeOptions != null) {
-                sql = "INSERT INTO Grade_option (course_number, option) VALUES (?, ?)";
-                pstmt = conn.prepareStatement(sql);
-                for (String option : gradeOptions) {
-                    pstmt.setString(1, courseNumber);
-                    pstmt.setString(2, option);
-                    pstmt.executeUpdate();
-                }
-            }
-
-            // Insert into Prerequisite table
-            if (prerequisites != null) {
-                sql = "INSERT INTO Prerequisite (course_number, required_course_number) VALUES (?, ?)";
-                pstmt = conn.prepareStatement(sql);
-                for (String prerequisite : prerequisites) {
-                    pstmt.setString(1, courseNumber);
-                    pstmt.setString(2, prerequisite);
-                    pstmt.executeUpdate();
-                }
-            }
-        }else if (action.equals("delete")){
-            String sql;
-            if (availableUnits != null) {
-                sql = "DELETE FROM Units WHERE course_number = ? AND unit = ?";
-                pstmt = conn.prepareStatement(sql);
-                for (String unit : availableUnits) {
-                    out.println(unit);
-                    pstmt.setString(1, courseNumber);
-                    pstmt.setInt(2, Integer.parseInt(unit));
-                    pstmt.executeUpdate();
-                }
-            }
-            if (gradeOptions != null){
-                sql = "DELETE FROM grade_option WHERE course_number = ? AND option = ?";
-                pstmt = conn.prepareStatement(sql);
-                for (String option : gradeOptions){
-                    pstmt.setString(1, courseNumber);
-                    pstmt.setString(2, option);
-                    pstmt.executeUpdate();
-                }
-            }
-            if (prerequisites != null) {
-                sql = "DELETE FROM Prerequisite WHERE course_number = ? AND required_course_number = ?";
-                pstmt = conn.prepareStatement(sql);
-                for (String prerequisite : prerequisites) {
-                    pstmt.setString(1, courseNumber);
-                    pstmt.setString(2, prerequisite);
-                    pstmt.executeUpdate();
-                }
-            }
-            if (availableUnits == null && gradeOptions == null && prerequisites == null){
-                sql = "DELETE FROM Course WHERE course_number = ?";
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, courseNumber);
+                String sqlDeleteUnits = "DELETE FROM Units WHERE course_id = ?";
+                pstmt = conn.prepareStatement(sqlDeleteUnits);
+                pstmt.setInt(1, courseId);
                 pstmt.executeUpdate();
+
+                String sqlInsertUnits = "INSERT INTO Units (course_id, unit) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sqlInsertUnits);
+                for (String unit : availableUnits) {
+                    pstmt.setInt(1, courseId);
+                    pstmt.setInt(2, Integer.parseInt(unit));
+                    pstmt.executeUpdate();
+                }
             }
-        }else if (action.equals("update")){
-            String sql = "UPDATE Course SET department = ?, require_lab_work = ? WHERE course_number = ?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, department);
-            pstmt.setBoolean(2, labRequired);
-            pstmt.setString(3, courseNumber);
-            pstmt.executeUpdate();
+
+            // Update grade options
+            if (gradeOptions != null) {
+                String sqlDeleteGradeOptions = "DELETE FROM Grade_option WHERE course_id = ?";
+                pstmt = conn.prepareStatement(sqlDeleteGradeOptions);
+                pstmt.setInt(1, courseId);
+                pstmt.executeUpdate();
+
+                String sqlInsertGradeOptions = "INSERT INTO Grade_option (course_id, option) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sqlInsertGradeOptions);
+                for (String option : gradeOptions) {
+                    pstmt.setInt(1, courseId);
+                    pstmt.setString(2, option);
+                    pstmt.executeUpdate();
+                }
+            }
+
+            // Update prerequisites
+            if (prerequisites != null) {
+                String sqlDeletePrerequisites = "DELETE FROM Prerequisite WHERE course_id = ?";
+                pstmt = conn.prepareStatement(sqlDeletePrerequisites);
+                pstmt.setInt(1, courseId);
+                pstmt.executeUpdate();
+
+                String sqlInsertPrerequisites = "INSERT INTO Prerequisite (course_id, required_course_id) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sqlInsertPrerequisites);
+                for (String prereq : prerequisites) {
+                    pstmt.setInt(1, courseId);
+                    pstmt.setInt(2, Integer.parseInt(prereq)); // Assuming prereq is a course_id
+                    pstmt.executeUpdate();
+                }
+            }
+        } else if ("delete".equals(action)) {
+            // Delete course
+            String sqlDeleteCourse = "DELETE FROM Course WHERE course_id = ?";
+            pstmt = conn.prepareStatement(sqlDeleteCourse);
+            pstmt.setInt(1, courseId);
+            result = pstmt.executeUpdate();
+        } else {
+            throw new IllegalArgumentException("Invalid action: " + action);
         }
+
+        if (result > 0) {
+            conn.commit(); // Commit transaction
+            out.println("<p>Insert successful. " + result + " row(s) affected.</p>");
+        } else {
+            conn.rollback(); // Rollback transaction
+            out.println("<p>Insert failed. No rows affected.</p>");
+        }
+
     } catch (Exception e) {
-        out.println("<p>got an error in try/catch</p>");
-        out.println("<p>Error: " + e.getMessage() + "</p>");
-        e.printStackTrace();
+        out.println("<p>Error processing course data: " + e.getMessage() + "</p>");
+        try {
+            if (conn != null) conn.rollback(); // Rollback transaction on error
+        } catch (SQLException ex) {
+            out.println("<p>Error during transaction rollback: " + ex.getMessage() + "</p>");
+        }
     } finally {
-        if (pstmt != null) try { pstmt.close(); } catch (SQLException ignore) {}
-        if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        if (rs != null) try { rs.close(); } catch (SQLException e) { /* ignored */ }
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) { /* ignored */ }
+        if (conn != null) try { conn.close(); } catch (SQLException e) { /* ignored */ }
     }
 %>
 </body>

@@ -39,6 +39,10 @@
             </select>
         </div>
         <div class="input-group">
+            <label for="courseId">Course ID:</label>
+            <input type="number" id="courseId" name="courseId" required>
+        </div>
+        <div class="input-group">
             <label for="courseNumber">Course Number:</label>
             <input type="text" id="courseNumber" name="courseNumber" required>
         </div>
@@ -53,12 +57,21 @@
                 <option value="true">True</option>
             </select>
         </div>
+        <div class="input-group">
+            <label for="consentOfInstructorRequired">Requires Consent of Instructor as Prerequisite:</label>
+            <select id="consentOfInstructorRequired" name="consentOfInstructorRequired" required>
+                <option value="false">False</option>
+                <option value="true">True</option>
+            </select>
+        </div>
         <div class="checkbox-group">
             <label>Grade Options:</label><br>
             <input type="checkbox" id="gradeLetter" name="gradeOptions[]" value="Letter">
             <label for="gradeLetter">Letter</label><br>
             <input type="checkbox" id="gradePassNoPass" name="gradeOptions[]" value="Pass/No Pass">
-            <label for="gradePassNoPass">Pass/No Pass</label>
+            <label for="gradePassNoPass">Pass/No Pass</label><br>
+            <input type="checkbox" id="gradeSU" name="gradeOptions[]" value="S/U">
+            <label for="gradeSU">S/U</label>
         </div>
         <div class="checkbox-group">
             <label>Available Units:</label><br>
@@ -66,8 +79,12 @@
             <label for="unit1">1</label><br>
             <input type="checkbox" id="unit2" name="availableUnits[]" value="2">
             <label for="unit2">2</label><br>
+            <input type="checkbox" id="unit3" name="availableUnits[]" value="3">
+            <label for="unit3">3</label><br>
             <input type="checkbox" id="unit4" name="availableUnits[]" value="4">
             <label for="unit4">4</label><br>
+            <input type="checkbox" id="unit5" name="availableUnits[]" value="5">
+            <label for="unit5">5</label><br>
             <input type="checkbox" id="unit6" name="availableUnits[]" value="6">
             <label for="unit6">6</label>
         </div>
