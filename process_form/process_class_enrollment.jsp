@@ -16,6 +16,8 @@
     String[] titles = request.getParameterValues("title[]");
     String[] sectionIds = request.getParameterValues("section_id[]");
     String[] statuses = request.getParameterValues("status[]");
+    String[] grading_options = request.getParameterValues("grading_option[]");
+    String[] units = request.getParameterValues("units[]");    
     String[] grades = request.getParameterValues("grade[]");
 
     Connection conn = null;
@@ -31,20 +33,50 @@
         // Establish connection
         conn = DriverManager.getConnection(url, user, password);
 
-        // SQL to insert into Enrollment table
-        String sql = "INSERT INTO Enrollment (student_id, class_id, section_id, enrollment_type, grading_option, units) VALUES (?, ?, ?, ?, ?, ?)";
-        pstmt = conn.prepareStatement(sql);
+        int gradeIndex = 0;
+        
 
+        //add into Student_take_class no matter what, then add to enrollment if currently taking.
         // Loop over each class entry
         for (int i = 0; i < courseNumbers.length; i++) {
+            String select_sql = "SELECT class_id FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
+            pstmt = conn.prepareStatement(select_sql);
+
+            pstmt.setString(1, courseNumbers[i]);
+            pstmt.setInt(2, Integer.parseInt(years[i]));
+            pstmt.setString(3, quarters[i]);
+            pstmt.setString(4, titles[i]);
+
+            ResultSet result = pstmt.executeQuery();
+            int class_id = -1;
+            while (result.next()){
+                class_id = result.getInt("class_id");            
+            }
+            if (class_id == -1){
+                throw new SQLException("No class found with the given parameters.");
+            }
+            if (!statuses[i].equals("taken")){
+                String enroll_sql = "INSERT INTO Enrollment (student_id, class_id, section_id, enrollment_type, grading_option, units) VALUES (?, ?, ?, ?, ?, ?)";
+                pstmt = conn.prepareStatement(enroll_sql);
+                pstmt.setString(1, studentId);
+                pstmt.setInt(2, class_id);
+                pstmt.setString(3, sectionIds[i]);
+                pstmt.setString(4, statuses[i]);
+                pstmt.setString(5, grading_options[i]);
+                pstmt.setInt(6, Integer.parseInt(units[i]));
+                updates += pstmt.executeUpdate();
+            }
+            String sql = "INSERT INTO Student_take_class (student_id, class_id, section_id, grade) VALUES (?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, studentId);
-            pstmt.setString(2, courseNumbers[i]);
-            pstmt.setInt(3, Integer.parseInt(years[i]));
-            pstmt.setString(4, quarters[i]);
-            pstmt.setString(5, titles[i]);
-            pstmt.setString(6, sectionIds[i]);
-            pstmt.setString(7, statuses[i]);
-            pstmt.setString(8, (statuses[i].equals("taken") ? grades[i] : null));  // Grade is only relevant if the status is "taken"
+            pstmt.setInt(2, class_id);
+            pstmt.setString(3, sectionIds[i]);
+            if (statuses[i].equals("taken")){
+                pstmt.setString(4, grades[gradeIndex]);
+                gradeIndex ++;
+            }else{
+                pstmt.setString(4, "IP");
+            }
             updates += pstmt.executeUpdate();
         }
 

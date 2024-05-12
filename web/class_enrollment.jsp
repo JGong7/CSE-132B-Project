@@ -93,13 +93,13 @@
                 <label>Section ID:</label>
                 <input type="text" name="section_id[]" required pattern="[A-Za-z0-9]{3}" title="Section ID must be 3 alphanumeric characters.">
                 <label>Grading Option:</label>
-                <select name="grading_option">
+                <select name="grading_option[]">
                     <option value="P/NP">P/NP</option>
                     <option value="Letter">Letter</option>
                     <option value="S/U">S/U</option>
                 </select>
                 <label>Units:</label>
-                <select name="units">
+                <select name="units[]">
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
