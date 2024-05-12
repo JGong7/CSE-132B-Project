@@ -1,63 +1,98 @@
-<%@ page import="java.sql.*,java.io.*" %>
+<%@ page import="java.sql.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
 <head>
-<title>Process Faculty</title>
+    <meta charset="UTF-8">
+    <title>Process Faculty Submission</title>
 </head>
 <body>
 <%
+    String action = request.getParameter("action");
     String name = request.getParameter("name");
     String title = request.getParameter("title");
     String[] departments = request.getParameterValues("departments[]");
 
-    out.println("Received name: " + name + "<br>");
-    out.println("Received title: " + title + "<br>");
-    for (String department : departments){
-        out.println("Received department: " + department + "<br>");
-    }
-    String url = "jdbc:postgresql://cse132b.cxa6600i8ci8.us-east-2.rds.amazonaws.com:5432/postgres";
-    String user = "postgres";
-    String password = "James2085";
+    Connection conn = null;
+    PreparedStatement pstmt = null;
 
-    Class.forName("org.postgresql.Driver");
+    try {
+        String url = "jdbc:postgresql://cse132b.cxa6600i8ci8.us-east-2.rds.amazonaws.com:5432/postgres";
+        String user = "postgres";
+        String password = "James2085";
 
-    // Establish the connection
-    Connection conn = DriverManager.getConnection(url, user, password);
-    // If connection is successfully established, print a message
-    if (conn != null) {
-        out.println("Connected to the database!");
-    } else {
-        out.println("Failed to make connection!");
-    }
+        Class.forName("org.postgresql.Driver");
 
-    String sql = "INSERT INTO Faculty (name, title) VALUES (?, ?)";
-    PreparedStatement pstmt = conn.prepareStatement(sql);
+        // Establish the connection
+        conn = DriverManager.getConnection(url, user, password);
+        conn.setAutoCommit(false); // Start transaction
 
-    pstmt.setString(1, name);
-    pstmt.setString(2, title);
-    int rowsAffected = pstmt.executeUpdate();
-    out.println("Inserting into Faculty");
-    if (rowsAffected > 0) {
-        out.println("Insert successful. " + rowsAffected + " row(s) affected.");
-    } else {
-        out.println("Insert failed. No rows affected.");
-    }
+        int result = 0;
+        if ("add".equals(action)) {
+            String sql = "INSERT INTO Faculty (name, title) VALUES (?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            pstmt.setString(2, title);
+            result += pstmt.executeUpdate();
 
-    for (String department : departments){
-        sql = "INSERT INTO Faculty_department (name, department) VALUES(?, ?)";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, name);
-        pstmt.setString(2, department);
-        rowsAffected = pstmt.executeUpdate();
-        out.println("Inserting into Faculty_department");
-        if (rowsAffected > 0) {
-            out.println("Insert successful. " + rowsAffected + " row(s) affected.");
+            if (departments != null) {
+                sql = "INSERT INTO Faculty_Department (name, department) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, name);
+                for (String department : departments) {
+                    pstmt.setString(2, department);
+                    result += pstmt.executeUpdate();
+                }
+            }
+        } else if ("update".equals(action)) {
+            String sql = "UPDATE Faculty SET title = ? WHERE name = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, title);
+            pstmt.setString(2, name);
+            result += pstmt.executeUpdate();
+
+            if (departments != null) {
+                sql = "DELETE FROM Faculty_Department WHERE name = ?";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, name);
+                result += pstmt.executeUpdate();
+
+                sql = "INSERT INTO Faculty_Department (name, department) VALUES (?, ?)";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, name);
+                for (String department : departments) {
+                    pstmt.setString(2, department);
+                    result += pstmt.executeUpdate();
+                }
+            }
+        } else if ("delete".equals(action)) {
+            String sql = "DELETE FROM Faculty WHERE name = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            result += pstmt.executeUpdate();
         } else {
-            out.println("Insert failed. No rows affected.");
+            throw new IllegalArgumentException("Invalid action: " + action);
         }
+
+        if (result > 0) {
+            conn.commit();
+            out.println("<p>Faculty details processed successfully.</p>");
+        } else {
+            conn.rollback();
+            out.println("<p>No faculty details processed.</p>");
+        }
+
+    } catch (Exception e) {
+        out.println("<p>Error processing faculty details: " + e.getMessage() + "</p>");
+        try {
+            if (conn != null) conn.rollback();
+        } catch (SQLException ex) {
+            out.println("<p>Error during transaction rollback: " + ex.getMessage() + "</p>");
+        }
+    } finally {
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException ex) { /* ignored */ }
+        if (conn != null) try { conn.close(); } catch (SQLException ex) { /* ignored */ }
     }
 %>
-<h1>Faculty Information</h1>
-<p>Name: <%= name %></p>
-<p>Title: <%= title %></p>
 </body>
 </html>

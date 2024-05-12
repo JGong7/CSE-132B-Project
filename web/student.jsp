@@ -21,6 +21,14 @@
     <h2>Student Entry Form</h2>
     <form action="../process_form/process_student.jsp" method="POST">
         <div class="input-group">
+            <label for="action">Action:</label>
+            <select id="action" name="action">
+                <option value="add">Add</option>
+                <option value="update">Update</option>
+                <option value="delete">Delete</option>
+            </select>
+        </div>
+        <div class="input-group">
             <label for="studentType">Student Type:</label>
             <select id="studentType" name="studentType" onchange="showRelevantFields()">
                 <option value="">Select type</option>

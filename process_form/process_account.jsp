@@ -34,7 +34,6 @@
         pstmt.setBigDecimal(2, new BigDecimal(balance));
         pstmt.executeUpdate();
 
-        // Prepare SQL statement
         sql = "INSERT INTO Student_to_account (student_id, account_number) VALUES (?, ?)";
         pstmt = conn.prepareStatement(sql);
         pstmt.setString(1, student_id);

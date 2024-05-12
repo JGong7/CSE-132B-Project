@@ -7,6 +7,7 @@
 </head>
 <body>
 <%
+    String action = request.getParameter("action");
     String studentId = request.getParameter("studentId");
     String degreeId = request.getParameter("degreeId");
 
@@ -24,13 +25,29 @@
         conn = DriverManager.getConnection(url, user, password);
         conn.setAutoCommit(false); // Start transaction
 
-        String sql = "INSERT INTO Pursuing (student_id, degree_id) VALUES (?, ?)";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, studentId);
-        pstmt.setString(2, degreeId);
+        int result = 0;
+        if ("add".equals(action)) {
+            String sql = "INSERT INTO Pursuing (student_id, degree_id) VALUES (?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, studentId);
+            pstmt.setString(2, degreeId);
+            result = pstmt.executeUpdate();
+        } else if ("update".equals(action)) {
+            String sql = "UPDATE Pursuing SET degree_id = ? WHERE student_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, degreeId);
+            pstmt.setString(2, studentId);
+            result = pstmt.executeUpdate();
+        } else if ("delete".equals(action)) {
+            String sql = "DELETE FROM Pursuing WHERE student_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, studentId);
+            result = pstmt.executeUpdate();
+        } else {
+            throw new IllegalArgumentException("Invalid action: " + action);
+        }
 
-        int rowsAffected = pstmt.executeUpdate();
-        if (rowsAffected > 0) {
+        if (result > 0) {
             conn.commit(); // Commit the transaction
             out.println("<p>Record inserted successfully.</p>");
         } else {

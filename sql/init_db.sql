@@ -30,7 +30,7 @@ CREATE TABLE Faculty (
 CREATE TABLE Undergraduate_student (
     student_id CHAR(9) PRIMARY KEY,
     college VARCHAR(25) NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE
 );
 
 -- BSMS student
@@ -39,7 +39,7 @@ CREATE TABLE BSMS_student (
     college VARCHAR(25) NOT NULL,
     department VARCHAR(50) NOT NULL,
     plan VARCHAR(50) NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE
 );
 
 -- Master student
@@ -47,7 +47,7 @@ CREATE TABLE Master_student (
     student_id CHAR(9) PRIMARY KEY,
     department VARCHAR(50) NOT NULL,
     plan VARCHAR(50) NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE
 );
 
 -- PhD student
@@ -56,7 +56,7 @@ CREATE TABLE Phd_student (
     department VARCHAR(50) NOT NULL,
     candidacy_status VARCHAR(15) NOT NULL,
     advisor VARCHAR(50),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
     FOREIGN KEY (advisor) REFERENCES Faculty(name)
 );
 
@@ -65,8 +65,8 @@ CREATE TABLE Additional_phd_professors (
     student_id CHAR(9),
     professor VARCHAR(50),
     PRIMARY KEY (student_id, professor),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    FOREIGN KEY (professor) REFERENCES Faculty(name)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (professor) REFERENCES Faculty(name) ON DELETE CASCADE
 );
 
 -- Thesis committee
@@ -74,8 +74,8 @@ CREATE TABLE Thesis_committee (
     student_id CHAR(9),
     professor VARCHAR(50),
     PRIMARY KEY (student_id, professor),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id), 
-    FOREIGN KEY (professor) REFERENCES Faculty(name)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE, 
+    FOREIGN KEY (professor) REFERENCES Faculty(name) ON DELETE CASCADE
 );
 
 -- Attendance periods
@@ -84,7 +84,7 @@ CREATE TABLE Attendance_periods (
     period_start DATE,
     period_end DATE,
     PRIMARY KEY (student_id, period_start, period_end),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE
 );
 
 -- Degrees obtained
@@ -96,7 +96,7 @@ CREATE TABLE Degrees_obtained (
     end_date DATE,
     university VARCHAR(255),
     PRIMARY KEY (student_id, degree_type, major, start_date, end_date, university),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE
 );
 
 -- Probation
@@ -106,7 +106,7 @@ CREATE TABLE Probation (
     end_date DATE,
     reason VARCHAR(255) NOT NULL,
     PRIMARY KEY (student_id, start_date, end_date),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE
 );
 
 -- Account table
@@ -121,7 +121,7 @@ CREATE TABLE Payment_history (
     amount DECIMAL(10, 2) NOT NULL,
     time TIMESTAMP,
     PRIMARY KEY (account_number, time),
-    FOREIGN KEY (account_number) REFERENCES Account(account_number)
+    FOREIGN KEY (account_number) REFERENCES Account(account_number) ON DELETE CASCADE
 );
 
 -- Student to account
@@ -129,8 +129,8 @@ CREATE TABLE Student_to_account (
     student_id CHAR(9),
     account_number VARCHAR(50),
     PRIMARY KEY (student_id, account_number),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    FOREIGN KEY (account_number) REFERENCES Account(account_number)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (account_number) REFERENCES Account(account_number) ON DELETE CASCADE
 );
 
 -- Payment method
@@ -138,7 +138,7 @@ CREATE TABLE Payment_method (
     account_number VARCHAR(50),
     method VARCHAR(255),
     PRIMARY KEY (account_number, method),
-    FOREIGN KEY (account_number) REFERENCES Account(account_number)
+    FOREIGN KEY (account_number) REFERENCES Account(account_number) ON DELETE CASCADE
 );
 
 -- Degree
@@ -157,8 +157,8 @@ CREATE TABLE Pursuing (
     student_id CHAR(9),
     degree_id CHAR(4),
     PRIMARY KEY (student_id, degree_id),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
-    FOREIGN KEY (degree_id) REFERENCES Degree(degree_id)
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (degree_id) REFERENCES Degree(degree_id) ON DELETE CASCADE
 );
 
 -- Faculty department
@@ -166,7 +166,7 @@ CREATE TABLE Faculty_department (
     name VARCHAR(255),
     department VARCHAR(255),
     PRIMARY KEY (name, department),
-    FOREIGN KEY (name) REFERENCES Faculty(name)
+    FOREIGN KEY (name) REFERENCES Faculty(name) ON DELETE CASCADE
 );
 
 -- Course
@@ -181,7 +181,7 @@ CREATE TABLE Units (
     course_number VARCHAR(50),
     unit INT,
     PRIMARY KEY (course_number, unit),
-    FOREIGN KEY (course_number) REFERENCES Course(course_number)
+    FOREIGN KEY (course_number) REFERENCES Course(course_number) ON DELETE CASCADE
 );
 
 -- Grade option
@@ -189,7 +189,7 @@ CREATE TABLE Grade_option (
     course_number VARCHAR(50),
     option VARCHAR(50),
     PRIMARY KEY (course_number, option),
-    FOREIGN KEY (course_number) REFERENCES Course(course_number)
+    FOREIGN KEY (course_number) REFERENCES Course(course_number) ON DELETE CASCADE
 );
 
 -- Prerequisite
@@ -197,8 +197,8 @@ CREATE TABLE Prerequisite (
     course_number VARCHAR(50),
     required_course_number VARCHAR(50),
     PRIMARY KEY (course_number, required_course_number),
-    FOREIGN KEY (course_number) REFERENCES Course(course_number),
-    FOREIGN KEY (required_course_number) REFERENCES Course(course_number)
+    FOREIGN KEY (course_number) REFERENCES Course(course_number) ON DELETE CASCADE,
+    FOREIGN KEY (required_course_number) REFERENCES Course(course_number) ON DELETE CASCADE
 );
 
 -- Class
@@ -217,8 +217,8 @@ CREATE TABLE Teaching_schedule (
     name VARCHAR(255),
     class_id INT,
     PRIMARY KEY (name, class_id),
-    FOREIGN KEY (name) REFERENCES Faculty(name),
-    FOREIGN KEY (class_id) REFERENCES Class(class_id)
+    FOREIGN KEY (name) REFERENCES Faculty(name) ON DELETE CASCADE,
+    FOREIGN KEY (class_id) REFERENCES Class(class_id) ON DELETE CASCADE
 );
 
 -- Section
@@ -229,7 +229,7 @@ CREATE TABLE Section (
     enrollment_limit INT NOT NULL,
     PRIMARY KEY (section_id, class_id),
     FOREIGN KEY (class_id) REFERENCES Class(class_id) ON DELETE CASCADE,
-    FOREIGN KEY (professor) REFERENCES Faculty(name)
+    FOREIGN KEY (professor) REFERENCES Faculty(name) ON DELETE CASCADE
 );
 
 -- Student take class
@@ -253,7 +253,7 @@ CREATE TABLE Enrollment (
     units INT NOT NULL,
     enroll_order SERIAL NOT NULL,
     PRIMARY KEY (student_id, class_id, section_id),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
 

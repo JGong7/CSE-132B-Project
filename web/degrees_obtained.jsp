@@ -18,6 +18,14 @@
     <h2>Enter Degree Details</h2>
     <form action="../process_form/process_degrees_obtained.jsp" method="POST">
         <div class="input-group">
+            <label for="action">Action:</label>
+            <select id="action" name="action">
+                <option value="add">Add</option>
+                <option value="update">Update</option>
+                <option value="delete">Delete</option>
+            </select>
+        </div>
+        <div class="input-group">
             <label for="studentId">Student ID:</label>
             <input type="text" id="studentId" name="studentId" required>
         </div>
