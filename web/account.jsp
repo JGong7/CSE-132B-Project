@@ -50,11 +50,6 @@
             <label for="balance">Account Balance:</label>
             <input type="text" id="balance" name="balance" required>
         </div>
-        <div id="paymentContainer" class="input-group">
-            <label>Payment Methods:</label>
-            <input type="text" name="paymentMethods[]">
-            <button type="button" onclick="addMethodField(true)">Add Another Payment Method</button>
-        </div>
         <div id="historyContainer" class="input-group">
             <label>Payment History:</label>
             <button type="button" onclick="addHistoryField(true)">Add Another Previous Payment</button>
@@ -64,20 +59,6 @@
     </form>
 
     <script>
-        function addMethodField() {
-            var container = document.getElementById('paymentContainer');
-            var inputGroup = document.createElement('div');
-            inputGroup.className = 'input-group';
-            inputGroup.innerHTML = '<input type="text" name="paymentMethods[]" placeholder="Enter payment method" required>'
-                                + '<button type="button" class="remove-btn" onclick="removeMethodInput(this)">Remove</button>';
-            container.appendChild(inputGroup);
-        }
-
-        function removeMethodInput(btn) {
-            var inputGroup = btn.parentNode;
-            inputGroup.parentNode.removeChild(inputGroup);
-        }
-
         function addHistoryField() {
             var container = document.getElementById('historyContainer');
             var inputGroup = document.createElement('div');

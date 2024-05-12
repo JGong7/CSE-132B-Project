@@ -113,7 +113,9 @@ CREATE TABLE Probation (
 -- Account table
 CREATE TABLE Account (
     account_number VARCHAR(50) PRIMARY KEY,
-    balance DECIMAL(10, 2) NOT NULL
+    student_id CHAR(9),
+    balance DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE
 );
 
 -- Payment history
@@ -125,22 +127,6 @@ CREATE TABLE Payment_history (
     FOREIGN KEY (account_number) REFERENCES Account(account_number) ON DELETE CASCADE
 );
 
--- Student to account
-CREATE TABLE Student_to_account (
-    student_id CHAR(9),
-    account_number VARCHAR(50),
-    PRIMARY KEY (student_id, account_number),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
-    FOREIGN KEY (account_number) REFERENCES Account(account_number) ON DELETE CASCADE
-);
-
--- Payment method
-CREATE TABLE Payment_method (
-    account_number VARCHAR(50),
-    method VARCHAR(255),
-    PRIMARY KEY (account_number, method),
-    FOREIGN KEY (account_number) REFERENCES Account(account_number) ON DELETE CASCADE
-);
 
 -- Degree
 CREATE TABLE Degree (
