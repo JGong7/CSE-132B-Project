@@ -158,45 +158,47 @@ CREATE TABLE Faculty_department (
 
 -- Course
 CREATE TABLE Course (
-    course_number VARCHAR(50) PRIMARY KEY,
+    course_id SERIAL PRIMARY KEY,
+    course_number VARCHAR(50) UNIQUE NOT NULL,
     department VARCHAR(255) NOT NULL,
-    require_lab_work BOOLEAN NOT NULL
+    require_lab_work BOOLEAN NOT NULL,
+    require_consent_of_instructor BOOLEAN NOT NULL
 );
 
 -- Units
 CREATE TABLE Units (
-    course_number VARCHAR(50),
+    course_id INT,
     unit INT,
-    PRIMARY KEY (course_number, unit),
-    FOREIGN KEY (course_number) REFERENCES Course(course_number) ON DELETE CASCADE
+    PRIMARY KEY (course_id, unit),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE
 );
 
 -- Grade option
 CREATE TABLE Grade_option (
-    course_number VARCHAR(50),
+    course_id INT,
     option VARCHAR(50),
-    PRIMARY KEY (course_number, option),
-    FOREIGN KEY (course_number) REFERENCES Course(course_number) ON DELETE CASCADE
+    PRIMARY KEY (course_id, option),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE
 );
 
 -- Prerequisite
 CREATE TABLE Prerequisite (
-    course_number VARCHAR(50),
-    required_course_number VARCHAR(50),
-    PRIMARY KEY (course_number, required_course_number),
-    FOREIGN KEY (course_number) REFERENCES Course(course_number) ON DELETE CASCADE,
-    FOREIGN KEY (required_course_number) REFERENCES Course(course_number) ON DELETE CASCADE
+    course_id INT,
+    required_course_id INT,
+    PRIMARY KEY (course_id, required_course_id),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE,
+    FOREIGN KEY (required_course_id) REFERENCES Course(course_id) ON DELETE CASCADE
 );
 
 -- Class
 CREATE TABLE Class (
     class_id SERIAL PRIMARY KEY,
-    course_number VARCHAR(50) NOT NULL,
+    course_id INT NOT NULL,
     year INT NOT NULL,
     quarter VARCHAR(50) NOT NULL,
     title VARCHAR(255) NOT NULL,
-    FOREIGN KEY (course_number) REFERENCES Course(course_number),
-    UNIQUE (course_number, year, quarter, title) -- Ensures combination is unique, but doesn't burden the primary key
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE,
+    UNIQUE (course_id, year, quarter, title) -- Ensures combination is unique, but doesn't burden the primary key
 );
 
 -- Teaching schedule
@@ -258,5 +260,20 @@ CREATE TABLE Meeting (
     date_end DATE NOT NULL,
     days_of_week VARCHAR(7) NOT NULL,
     PRIMARY KEY (class_id, section_id, meeting_id),
+    FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
+);
+
+-- Review Session
+CREATE TABLE Review_Session (
+    class_id INT,
+    section_id CHAR(3),
+    review_session_id SERIAL,
+    room VARCHAR(255) NOT NULL,
+    building VARCHAR(255) NOT NULL,
+    mandatory BOOLEAN NOT NULL,
+    time_start TIME NOT NULL,
+    time_end TIME NOT NULL,
+    date DATE NOT NULL,
+    PRIMARY KEY (class_id, section_id, review_session_id),
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
