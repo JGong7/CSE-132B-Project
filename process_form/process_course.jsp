@@ -75,7 +75,7 @@
 
         out.println("<p>Course data successfully saved!</p>");
     } catch (Exception e) {
-        out.println("<p>got an error in try/catch</p>")
+        out.println("<p>got an error in try/catch</p>");
         out.println("<p>Error: " + e.getMessage() + "</p>");
         e.printStackTrace();
     } finally {

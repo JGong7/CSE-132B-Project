@@ -270,16 +270,7 @@ CREATE TABLE Meeting (
     time_end TIME NOT NULL,
     date_start DATE NOT NULL,
     date_end DATE NOT NULL,
+    days_of_week VARCHAR(7) NOT NULL,
     PRIMARY KEY (class_id, section_id, meeting_id),
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
-);
-
--- Days of week
-CREATE TABLE Days_of_week (
-    class_id INT,
-    section_id CHAR(3),
-    meeting_id INT,
-    days VARCHAR(50),
-    PRIMARY KEY (class_id, section_id, meeting_id, days),
-    FOREIGN KEY (class_id, section_id, meeting_id) REFERENCES Meeting(class_id, section_id, meeting_id) ON DELETE CASCADE
 );

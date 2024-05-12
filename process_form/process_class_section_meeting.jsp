@@ -58,7 +58,7 @@
 
             // Process meetings for each section
             String[] types = request.getParameterValues("type" + sectionId + "[]");
-            out.println("<p>types: " + types + "</p>");
+            //out.println("<p>types: " + types + "</p>");
             if (types != null) {
                 String[] rooms = request.getParameterValues("room" + sectionId + "[]");
                 String[] buildings = request.getParameterValues("building" + sectionId + "[]");
@@ -77,8 +77,10 @@
                     pstmt.setString(3, types[j]);
                     pstmt.setString(4, rooms[j]);
                     pstmt.setString(5, buildings[j]);
-                    pstmt.setTime(6, Time.valueOf(timeStarts[j]));
-                    pstmt.setTime(7, Time.valueOf(timeEnds[j]));
+                    String timeStartsSecond = timeStarts[j].replace("T", " ") + ":00";
+                    String timeEndsSecond = timeEnds[j].replace("T", " ") + ":00";
+                    pstmt.setTime(6, Time.valueOf(timeStartsSecond));
+                    pstmt.setTime(7, Time.valueOf(timeEndsSecond));
                     pstmt.setDate(8, Date.valueOf(dateStarts[j]));
                     pstmt.setDate(9, Date.valueOf(dateEnds[j]));
                     pstmt.setBoolean(10, Boolean.parseBoolean(mandatories[j]));
