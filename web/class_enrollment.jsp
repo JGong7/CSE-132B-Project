@@ -75,6 +75,14 @@
 <body>
     <h2>Class Enrollment Details</h2>
     <form action="../process_form/process_class_enrollment.jsp" method="POST">
+        <div class="input-group">
+            <label for="action">Action:</label>
+            <select id="action" name="action">
+                <option value="add">Add</option>
+                <option value="update">Update</option>
+                <option value="delete">Delete</option>
+            </select>
+        </div>
         <div>
             <label for="student_id">Student ID:</label>
             <input type="text" id="student_id" name="student_id" required pattern="[A-Za-z0-9]{9}" title="Student ID must be 9 alphanumeric characters.">

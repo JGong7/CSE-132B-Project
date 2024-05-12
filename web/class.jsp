@@ -26,6 +26,18 @@
     <h2>Class Entry Form</h2>
     <form action="../process_form/process_class.jsp" method="POST">
         <div class="input-group">
+            <label for="action">Action:</label>
+            <select id="action" name="action">
+                <option value="add">Add</option>
+                <option value="update">Update</option>
+                <option value="delete">Delete</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="id">Course ID (only if you're updating):</label>
+            <input type="number" id="id" name="id">
+        </div>
+        <div class="input-group">
             <label for="courseNumber">Course Number:</label>
             <input type="text" id="courseNumber" name="courseNumber" required>
         </div>

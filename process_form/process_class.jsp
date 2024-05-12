@@ -13,6 +13,8 @@
     String title = request.getParameter("title");
     String year = request.getParameter("year");
     String quarter = request.getParameter("quarter");
+    String action = request.getParameter("action");
+    String classId = request.getParameter("id");
 
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -26,17 +28,38 @@
         Class.forName("org.postgresql.Driver");
         // Establish connection
         conn = DriverManager.getConnection(url, user, password);
+        
+        if (action.equals("add")){
+            // SQL to insert into Enrollment table
+            String sql = "INSERT INTO Class (course_number, year, quarter, title) VALUES (?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sql);
 
-        // SQL to insert into Enrollment table
-        String sql = "INSERT INTO Class (course_number, year, quarter, title) VALUES (?, ?, ?, ?)";
-        pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, courseNumber);
+            pstmt.setInt(2, Integer.parseInt(year));
+            pstmt.setString(3, quarter);
+            pstmt.setString(4, title);
 
-        pstmt.setString(1, courseNumber);
-        pstmt.setInt(2, Integer.parseInt(year));
-        pstmt.setString(3, quarter);
-        pstmt.setString(4, title);
+            updates = pstmt.executeUpdate();
+        }else if (action.equals("delete")){
+            String sql = "DELETE FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, courseNumber);
+            pstmt.setInt(2, Integer.parseInt(year));
+            pstmt.setString(3, quarter);
+            pstmt.setString(4, title);
 
-        updates = pstmt.executeUpdate();
+            updates = pstmt.executeUpdate();
+        }else if (action.equals("update")){
+            String sql = "UPDATE Class SET title = ?, course_number = ?, year = ?, quarter = ? WHERE class_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(2, courseNumber);
+            pstmt.setInt(3, Integer.parseInt(year));
+            pstmt.setString(4, quarter);
+            pstmt.setString(1, title);
+            pstmt.setInt(5, Integer.parseInt(classId));
+
+            updates = pstmt.executeUpdate();
+        }
 
         // Output success message
         out.println("<p>Data successfully inserted for " + updates + " classes.</p>");

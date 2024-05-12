@@ -14,6 +14,8 @@
     String year = request.getParameter("year");
     String quarter = request.getParameter("quarter");
 
+    String action = request.getParameter("action");
+
     String[] section_ids = request.getParameterValues("section_id[]");
     String[] professors = request.getParameterValues("professor[]");
     String[] enrollmentLimit = request.getParameterValues("enrollmentLimit[]");
@@ -43,17 +45,38 @@
         while (result.next()){
             class_id = result.getInt("class_id");            
         }
-
-        sql = "INSERT INTO Section (section_id, class_id, professor, enrollment_limit) VALUES (?, ?, ?, ?)";
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setInt(2, class_id);
-        for (int i = 0; i < section_ids.length; i++){
-            pstmt.setString(1, section_ids[i]);
-            pstmt.setString(3, professors[i]);
-            pstmt.setInt(4, Integer.parseInt(enrollmentLimit[i]));
-            updates += pstmt.executeUpdate();
+        if (action.equals("add")){
+            sql = "INSERT INTO Section (section_id, class_id, professor, enrollment_limit) VALUES (?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(2, class_id);
+            for (int i = 0; i < section_ids.length; i++){
+                pstmt.setString(1, section_ids[i]);
+                pstmt.setString(3, professors[i]);
+                pstmt.setInt(4, Integer.parseInt(enrollmentLimit[i]));
+                updates += pstmt.executeUpdate();
+            }
+            out.println(updates + " rows affected!");
+        }else if (action.equals("delete")){
+            sql = "DELETE FROM Section WHERE section_id = ? AND class_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(2, class_id);
+            for (int i = 0; i < section_ids.length; i++){
+                pstmt.setString(1, section_ids[i]);
+                updates += pstmt.executeUpdate();
+            }
+            out.println(updates + " rows affected!");
+        }else if (action.equals("update")){
+            sql = "UPDATE Section SET professor = ?, enrollment_limit = ? WHERE section_id = ? AND class_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(4, class_id);
+            for (int i = 0; i < section_ids.length; i++){
+                pstmt.setString(3, section_ids[i]);
+                pstmt.setInt(2, Integer.parseInt(enrollmentLimit[i]));
+                pstmt.setString(1, professors[i]);
+                updates += pstmt.executeUpdate();
+            }
+            out.println(updates + " rows affected!");
         }
-        out.println(updates + " rows affected!");
         
         
     } catch (Exception e) {
