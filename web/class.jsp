@@ -34,7 +34,7 @@
             </select>
         </div>
         <div class="input-group">
-            <label for="classid">Class ID(only required for delete and update):</label>
+            <label for="classid">Class ID:</label>
             <input type="number" id="classid" name="classid">
         </div>
         <div class="input-group">
