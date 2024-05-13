@@ -217,7 +217,7 @@ CREATE TABLE Student_take_class (
     section_id CHAR(3),
     grade CHAR(2) NOT NULL,
     PRIMARY KEY (student_id, class_id, section_id),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
 
