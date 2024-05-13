@@ -2,12 +2,11 @@
 -- SQL script to create and initialize the database tables
 
 -- Drop tables if they exist to start fresh (optional)
-DROP TABLE IF EXISTS Student_take_class, Enrollment, Meeting, Days_of_week, Section, Class, Course, 
-                   Grade_option, Units, Faculty_department, Faculty, Teaching_schedule, Prerequisite, 
-                   Pursuing, Degree, Student_to_account, Payment_method, Payment_history, Account, 
-                   Probation, Degrees_obtained, Attendance_periods, Thesis_committee, Phd_student, 
-                   Additional_phd_professors, Master_student, BSMS_student, Graduate_student, 
-                   Undergraduate_student, Student CASCADE;
+DROP TABLE IF EXISTS Student, Faculty, Undergraduate_student, BSMS_student, Master_student,
+                    Phd_student, Thesis_committee, Attendance_period, Degrees_obtained, 
+                    Probation, Account, Payment_history, Degree, Pursuing, Faculty_department,
+                    Course, Units, Grade_option, Prerequisite, Class, Teaching_schedule, 
+                    Section, Student_take_class, Enrollment, Meeting, Review_Session CASCADE;
 
 -- Student table
 CREATE TABLE Student (
@@ -60,15 +59,6 @@ CREATE TABLE Phd_student (
     FOREIGN KEY (advisor) REFERENCES Faculty(name)
 );
 
--- Additional Phd advisors
-CREATE TABLE Additional_phd_professors (
-    student_id CHAR(9),
-    professor VARCHAR(50),
-    PRIMARY KEY (student_id, professor),
-    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
-    FOREIGN KEY (professor) REFERENCES Faculty(name) ON DELETE CASCADE
-);
-
 -- Thesis committee
 CREATE TABLE Thesis_committee (
     student_id CHAR(9),
@@ -80,7 +70,7 @@ CREATE TABLE Thesis_committee (
 );
 
 -- Attendance periods
-CREATE TABLE Attendance_periods (
+CREATE TABLE Attendance_period (
     student_id CHAR(9),
     period_start DATE,
     period_end DATE,
