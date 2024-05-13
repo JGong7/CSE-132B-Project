@@ -35,7 +35,7 @@
         <div id="classContainer">
             <label>Classes:</label>
         </div>
-        <button type="button" onclick="addClassInput()">Add Class</button>
+        <button type="button" onclick="addIdInput()">Add Class</button>
         <br><br>
         <button type="submit">Submit Teaching Schedule Details</button>
     </form>
@@ -54,6 +54,19 @@
     }
 
     function removeClassInput(btn) {
+        var inputGroup = btn.parentNode;
+        inputGroup.parentNode.removeChild(inputGroup);
+    }
+    function addIdInput() {
+        var container = document.getElementById('classContainer');
+        var inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
+        inputGroup.innerHTML = '<label>class id:</label><input type="number" name="id[]" placeholder="Enter class id" required>'
+                             + '<button type="button" class="remove-btn" onclick="removeIdInput(this)">Remove class id</button>';
+        container.appendChild(inputGroup);
+    }
+
+    function removeIdInput(btn) {
         var inputGroup = btn.parentNode;
         inputGroup.parentNode.removeChild(inputGroup);
     }

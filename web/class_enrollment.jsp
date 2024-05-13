@@ -90,14 +90,8 @@
         <div id="classContainer">
             <label>Classes:</label>
             <div>
-                <label>Course Number:</label>
-                <input type="text" name="course_number[]" required>
-                <label>Year:</label>
-                <input type="text" name="year[]" required>
-                <label>Quarter:</label>
-                <input type="text" name="quarter[]" required>
-                <label>Title:</label>
-                <input type="text" name="title[]" required>
+                <label>Class ID:</label>
+                <input type="text" name="class_id[]" required>
                 <label>Section ID:</label>
                 <input type="text" name="section_id[]" required pattern="[A-Za-z0-9]{3}" title="Section ID must be 3 alphanumeric characters.">
                 <label>Grading Option:</label>

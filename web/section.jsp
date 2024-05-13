@@ -24,7 +24,6 @@
 </head>
 <body>
     <h2>Section Entry Form</h2>
-    <h3>First, indicate the class of the section:</h3>
     <form action="../process_form/process_section.jsp" method="POST">
         <div class="input-group">
             <label for="action">Action:</label>
@@ -35,20 +34,8 @@
             </select>
         </div>
         <div class="input-group">
-            <label for="courseNumber">Course Number:</label>
-            <input type="text" id="courseNumber" name="courseNumber" required>
-        </div>
-        <div class="input-group">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="input-group">
-            <label for="year">Year:</label>
-            <input type="number" id="year" name="year" required>
-        </div>
-        <div class="input-group">
-            <label for="quarter">Quarter:</label>
-            <input type="text" id="quarter" name="quarter" required>
+            <label for="classId">Class ID:</label>
+            <input type="text" id="classId" name="classId" required>
         </div>
 
         <div id="sectionsContainer">

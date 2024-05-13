@@ -9,13 +9,10 @@
 <body>
     <h1>Section Results</h1>
 <%
-    String courseNumber = request.getParameter("courseNumber");
-    String title = request.getParameter("title");
-    String year = request.getParameter("year");
-    String quarter = request.getParameter("quarter");
 
     String action = request.getParameter("action");
 
+    int class_id = Integer.parseInt(request.getParameter("classId"));
     String[] section_ids = request.getParameterValues("section_id[]");
     String[] professors = request.getParameterValues("professor[]");
     String[] enrollmentLimit = request.getParameterValues("enrollmentLimit[]");
@@ -31,20 +28,7 @@
         Class.forName("org.postgresql.Driver");
         // Establish connection
         conn = DriverManager.getConnection(url, user, password);
-
-        String sql = "SELECT class_id FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
-        pstmt = conn.prepareStatement(sql);
-
-        pstmt.setString(1, courseNumber);
-        pstmt.setInt(2, Integer.parseInt(year));
-        pstmt.setString(3, quarter);
-        pstmt.setString(4, title);
-
-        ResultSet result = pstmt.executeQuery();
-        int class_id = -1;
-        while (result.next()){
-            class_id = result.getInt("class_id");            
-        }
+        String sql;
         if (action.equals("add")){
             sql = "INSERT INTO Section (section_id, class_id, professor, enrollment_limit) VALUES (?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);

@@ -34,12 +34,12 @@
             </select>
         </div>
         <div class="input-group">
-            <label for="id">Course ID (only if you're updating):</label>
-            <input type="number" id="id" name="id">
+            <label for="classid">Class ID(only required for delete and update):</label>
+            <input type="number" id="classid" name="classid">
         </div>
         <div class="input-group">
-            <label for="courseNumber">Course Number:</label>
-            <input type="text" id="courseNumber" name="courseNumber" required>
+            <label for="id">Course ID:</label>
+            <input type="number" id="id" name="id" required>
         </div>
         <div class="input-group">
             <label for="title">Title:</label>

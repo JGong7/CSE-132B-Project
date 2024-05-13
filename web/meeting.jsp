@@ -27,20 +27,16 @@
     <h3>First indicate the class and the section that this meeting corresponds to:</h3>
     <form action="../process_form/process_meeting.jsp" method="POST">
         <div class="input-group">
-            <label for="courseNumber">Course Number:</label>
-            <input type="text" id="courseNumber" name="courseNumber" required>
+            <label for="action">Action:</label>
+            <select id="action" name="action">
+                <option value="add">Add</option>
+                <option value="update">Update</option>
+                <option value="delete">Delete</option>
+            </select>
         </div>
         <div class="input-group">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
-        </div>
-        <div class="input-group">
-            <label for="year">Year:</label>
-            <input type="number" id="year" name="year" required>
-        </div>
-        <div class="input-group">
-            <label for="quarter">Quarter:</label>
-            <input type="text" id="quarter" name="quarter" required>
+            <label for="classid">Class ID:</label>
+            <input type="text" id="classid" name="classid" required>
         </div>
 
         <div class="input-group">
@@ -61,6 +57,10 @@
             let meetingDiv = document.createElement('div');
             meetingDiv.className = 'meeting';
             meetingDiv.innerHTML = `
+                <div class="input-group">
+                    <label>Meeting id: (only put this if you want to update/delete) </label>
+                    <input type="number" name="meetingid[]">
+                </div>
                 <div class="input-group">
                     <label>Type:</label>
                     <input type="text" name="type[]" required>

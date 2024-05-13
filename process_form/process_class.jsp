@@ -9,12 +9,13 @@
 <body>
     <h1>Class Results</h1>
 <%
-    String courseNumber = request.getParameter("courseNumber");
+    String courseId = request.getParameter("id");
     String title = request.getParameter("title");
     String year = request.getParameter("year");
     String quarter = request.getParameter("quarter");
     String action = request.getParameter("action");
-    String classId = request.getParameter("id");
+
+    String classId = request.getParameter("classid");
 
     Connection conn = null;
     PreparedStatement pstmt = null;
@@ -31,28 +32,23 @@
         
         if (action.equals("add")){
             // SQL to insert into Enrollment table
-            String sql = "INSERT INTO Class (course_number, year, quarter, title) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO Class (course_id, year, quarter, title) VALUES (?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
-
-            pstmt.setString(1, courseNumber);
+            pstmt.setInt(1, Integer.parseInt(courseId));
             pstmt.setInt(2, Integer.parseInt(year));
             pstmt.setString(3, quarter);
             pstmt.setString(4, title);
 
             updates = pstmt.executeUpdate();
         }else if (action.equals("delete")){
-            String sql = "DELETE FROM Class WHERE course_number = ? AND year = ? AND quarter = ? AND title = ?";
+            String sql = "DELETE FROM Class WHERE class_id = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, courseNumber);
-            pstmt.setInt(2, Integer.parseInt(year));
-            pstmt.setString(3, quarter);
-            pstmt.setString(4, title);
-
+            pstmt.setInt(1, Integer.parseInt(classId));
             updates = pstmt.executeUpdate();
         }else if (action.equals("update")){
-            String sql = "UPDATE Class SET title = ?, course_number = ?, year = ?, quarter = ? WHERE class_id = ?";
+            String sql = "UPDATE Class SET title = ?, course_id = ?, year = ?, quarter = ? WHERE class_id = ?";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(2, courseNumber);
+            pstmt.setInt(2, Integer.parseInt(courseId));
             pstmt.setInt(3, Integer.parseInt(year));
             pstmt.setString(4, quarter);
             pstmt.setString(1, title);
