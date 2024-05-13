@@ -157,7 +157,7 @@ CREATE TABLE Faculty_department (
 
 -- Course
 CREATE TABLE Course (
-    course_id SERIAL PRIMARY KEY,
+    course_id INT PRIMARY KEY,
     course_number VARCHAR(50) UNIQUE NOT NULL,
     department VARCHAR(255) NOT NULL,
     require_lab_work BOOLEAN NOT NULL,
