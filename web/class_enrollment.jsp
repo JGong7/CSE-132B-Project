@@ -10,42 +10,38 @@
             var inputGroup = document.createElement('div');
             inputGroup.className = 'class-group';
             
-            var html = "<div>"
-                    + "<label>Course Number:</label>"
-                    + "<input type=\"text\" name=\"course_number[]\" required>"
-                    + "<label>Year:</label>"
-                    + "<input type=\"text\" name=\"year[]\" required>"
-                    + "<label>Quarter:</label>"
-                    + "<input type=\"text\" name=\"quarter[]\" required>"
-                    + "<label>Title:</label>"
-                    + "<input type=\"text\" name=\"title[]\" required>"
-                    + "<label>Section ID:</label>"
-                    + "<input type=\"text\" name=\"section_id[]\" required pattern=\"[A-Za-z0-9]{3}\" title=\"Section ID must be 3 alphanumeric characters.\">"
-                    + "<label>Grading Option:</label>"
-                    + "<select name=\"grading_option\">"
-                    + "<option value=\"P/NP\">P/NP</option>"
-                    + "<option value=\"Letter\">Letter</option>"
-                    + "<option value=\"S/U\">S/U</option>"
-                    + "</select>"
-                    + "<label>Units:</label>"
-                    + "<select name=\"units\">"
-                    + "<option value=\"1\">1</option>"
-                    + "<option value=\"2\">2</option>"
-                    + "<option value=\"3\">3</option>"
-                    + "<option value=\"4\">4</option>"
-                    + "<option value=\"5\">5</option>"
-                    + "<option value=\"6\">6</option>"
-                    + "</select>"
-                    + "<label>Status:</label>"
-                    + "<select name=\"status[]\" onchange=\"toggleGradeInput(this)\">"
-                    + "<option value=\"taking\">Currently Taking</option>"
-                    + "<option value=\"taken\">Already Taken</option>"
-                    + "<option value=\"waitlisting\">Currently Waitlisting</option>"
-                    + "</select>"
-                    + "<label class=\"gradeLabel\" style=\"display:none;\">Grade:</label>"
-                    + "<input type=\"text\" name=\"grade[]\" class=\"gradeInput\" style=\"display:none;\" maxlength=\"2\">"
-                    + "<button type=\"button\" onclick=\"removeClassInput(this)\">Remove Class</button>"
-                    + "</div>";
+            let html = `
+                <div>
+                    <label>Class ID:</label>
+                    <input type="text" name="class_id[]" required>
+                    <label>Section ID:</label>
+                    <input type="text" name="section_id[]" required pattern="[A-Za-z0-9]{3}" title="Section ID must be 3 alphanumeric characters.">
+                    <label>Grading Option:</label>
+                    <select name="grading_option[]">
+                        <option value="P/NP">P/NP</option>
+                        <option value="Letter">Letter</option>
+                        <option value="S/U">S/U</option>
+                    </select>
+                    <label>Units:</label>
+                    <select name="units[]">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                    <label>Status:</label>
+                    <select name="status[]" onchange="toggleGradeInput(this)">
+                        <option value="taking">Currently Taking</option>
+                        <option value="taken">Already Taken</option>
+                        <option value="waitlisting">Currently Waitlisting</option>
+                    </select>
+                    <label class="gradeLabel" style="display:none;">Grade:</label>
+                    <input type="text" name="grade[]" class="gradeInput" style="display:none;" maxlength="2">
+                    <button type="button" onclick="removeClassInput(this)">Remove Class</button>
+                </div>
+                `;
 
             inputGroup.innerHTML = html;
             container.appendChild(inputGroup);

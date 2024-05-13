@@ -96,7 +96,7 @@
                         <option value="false">No</option>
                     </select>
                 </div>
-                <div class="checkbox-group">
+                <div class="input-group">
                     <label>Days:</label><br>
                     <input type="text" name="days[]"><br>
                 </div>
