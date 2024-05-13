@@ -23,7 +23,7 @@
     Connection conn = null;
     PreparedStatement pstmt = null;
 
-    //try {
+    try {
         String url = "jdbc:postgresql://cse132b.cxa6600i8ci8.us-east-2.rds.amazonaws.com:5432/postgres";
         String user = "postgres";
         String password = "James2085";
@@ -84,18 +84,18 @@
             out.println("<p>No review session data processed.</p>");
         }
 
-    //}
-    //  catch (Exception e) {
-    //     out.println("<p>Error processing review session data: " + e.getMessage() + "</p>");
-    //     try {
-    //         if (conn != null) conn.rollback(); // Rollback transaction on error
-    //     } catch (SQLException ex) {
-    //         out.println("<p>Error during transaction rollback: " + ex.getMessage() + "</p>");
-    //     }
-    // } finally {
-    //     if (pstmt != null) try { pstmt.close(); } catch (SQLException e) { /* ignored */ }
-    //     if (conn != null) try { conn.close(); } catch (SQLException e) { /* ignored */ }
-    // }
+    }
+     catch (Exception e) {
+        out.println("<p>Error processing review session data: " + e.getMessage() + "</p>");
+        try {
+            if (conn != null) conn.rollback(); // Rollback transaction on error
+        } catch (SQLException ex) {
+            out.println("<p>Error during transaction rollback: " + ex.getMessage() + "</p>");
+        }
+    } finally {
+        if (pstmt != null) try { pstmt.close(); } catch (SQLException e) { /* ignored */ }
+        if (conn != null) try { conn.close(); } catch (SQLException e) { /* ignored */ }
+    }
 %>
 </body>
 </html>
