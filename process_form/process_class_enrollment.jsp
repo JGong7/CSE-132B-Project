@@ -50,7 +50,7 @@
                     pstmt.setInt(6, Integer.parseInt(units[i]));
                     updates += pstmt.executeUpdate();
                 }
-                String sql = "INSERT INTO Student_take_class (student_id, class_id, section_id, grade) VALUES (?, ?, ?, ?)";
+                String sql = "INSERT INTO Student_take_class (student_id, class_id, section_id, grade, units) VALUES (?, ?, ?, ?, ?)";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, studentId);
                 pstmt.setInt(2, class_id);
@@ -61,9 +61,10 @@
                 }else{
                     pstmt.setString(4, "IP");
                 }
+                pstmt.setInt(5, Integer.parseInt(units[i]));
                 updates += pstmt.executeUpdate();
             }
-        }else if (action.equals("delete")){
+        } else if (action.equals("delete")){
             for (int i = 0; i < class_ids.length; i++) {
                 int class_id = Integer.parseInt(class_ids[i]);
                 String enroll_sql = "DELETE FROM Enrollment WHERE student_id = ? AND class_id = ? AND section_id = ?";
@@ -79,10 +80,10 @@
                 pstmt.setString(3, sectionIds[i]);
                 updates += pstmt.executeUpdate();
             }
-        }else if (action.equals("update")){
+        } else if (action.equals("update")){
             for (int i = 0; i < class_ids.length; i++) {
                 int class_id = Integer.parseInt(class_ids[i]);
-                if (!statuses[i].equals("taken")){
+                if (!statuses[i].equals("taken")) {
                     String enroll_sql = "UPDATE Enrollment SET enrollment_type = ?, grading_option = ?, units = ? WHERE student_id = ? AND class_id = ? AND section_id = ?";
                     pstmt = conn.prepareStatement(enroll_sql);
                     pstmt.setString(4, studentId);
@@ -92,7 +93,7 @@
                     pstmt.setString(2, grading_options[i]);
                     pstmt.setInt(3, Integer.parseInt(units[i]));
                     updates += pstmt.executeUpdate();
-                }else{
+                } else {
                     String delete_sql = "DELETE FROM Enrollment WHERE student_id = ? AND class_id = ? AND section_id = ?";
                     pstmt = conn.prepareStatement(delete_sql);
                     pstmt.setString(1, studentId);
@@ -100,17 +101,18 @@
                     pstmt.setString(3, sectionIds[i]);
                     updates += pstmt.executeUpdate();
                 }
-                String sql = "UPDATE Student_take_class SET grade = ? WHERE student_id = ? AND class_id = ? AND section_id = ?";
+                String sql = "UPDATE Student_take_class SET grade = ?, units = ? WHERE student_id = ? AND class_id = ? AND section_id = ?";
                 pstmt = conn.prepareStatement(sql);
-                pstmt.setString(2, studentId);
-                pstmt.setInt(3, class_id);
-                pstmt.setString(4, sectionIds[i]);
-                if (statuses[i].equals("taken")){
+                pstmt.setString(3, studentId);
+                pstmt.setInt(4, class_id);
+                pstmt.setString(5, sectionIds[i]);
+                if (statuses[i].equals("taken")) s{
                     pstmt.setString(1, grades[gradeIndex]);
                     gradeIndex ++;
-                }else{
+                } else {
                     pstmt.setString(1, "IP");
                 }
+                pstmt.setInt(2, Integer.parseInt(units[i]));
                 updates += pstmt.executeUpdate();
             }
         }
