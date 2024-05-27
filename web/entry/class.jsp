@@ -24,7 +24,7 @@
 </head>
 <body>
     <h2>Class Entry Form</h2>
-    <form action="../process_form/process_class.jsp" method="POST">
+    <form action="../../process_form/process_class.jsp" method="POST">
         <div class="input-group">
             <label for="action">Action:</label>
             <select id="action" name="action">

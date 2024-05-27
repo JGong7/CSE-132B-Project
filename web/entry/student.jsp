@@ -19,7 +19,7 @@
 </head>
 <body>
     <h2>Student Entry Form</h2>
-    <form action="../process_form/process_student.jsp" method="POST">
+    <form action="../../process_form/process_student.jsp" method="POST">
         <div class="input-group">
             <label for="action">Action:</label>
             <select id="action" name="action">

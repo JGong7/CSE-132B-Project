@@ -25,7 +25,7 @@
 <body>
     <h2>Review Session Entry Form</h2>
     <h3>First indicate the class and the section that this review session corresponds to:</h3>
-    <form action="../process_form/process_review_session.jsp" method="POST">
+    <form action="../../process_form/process_review_session.jsp" method="POST">
         <div class="input-group">
             <label for="action">Action:</label>
             <select id="action" name="action">

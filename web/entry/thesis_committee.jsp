@@ -26,7 +26,7 @@
 </head>
 <body>
     <h1>Thesis Committee Entry Form</h1>
-    <form action="../process_form/process_thesis_committee.jsp" method="post">
+    <form action="../../process_form/process_thesis_committee.jsp" method="post">
         <div class="input-group">
             <label for="action">Action:</label>
             <select id="action" name="action">

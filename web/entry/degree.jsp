@@ -26,7 +26,7 @@
 </head>
 <body>
     <h2>Degree Requirements Entry Form</h2>
-    <form action="../process_form/process_degree.jsp" method="POST">
+    <form action="../../process_form/process_degree.jsp" method="POST">
         <div class="input-group">
             <label for="action">Action:</label>
             <select id="action" name="action">

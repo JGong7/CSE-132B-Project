@@ -24,7 +24,7 @@
 </head>
 <body>
     <h2>Class Entry Form</h2>
-    <form action="../process_form/process_class_section_meeting.jsp" method="POST">
+    <form action="../../process_form/process_class_section_meeting.jsp" method="POST">
         <div class="input-group">
             <label for="courseNumber">Course Number:</label>
             <input type="text" id="courseNumber" name="courseNumber" required>

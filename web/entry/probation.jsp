@@ -17,7 +17,7 @@
 </head>
 <body>
     <h2>Enter Probation Details</h2>
-    <form action="../process_form/process_probation.jsp" method="POST">
+    <form action="../../process_form/process_probation.jsp" method="POST">
         <div class="input-group">
             <label for="action">Action:</label>
             <select id="action" name="action">
