@@ -216,6 +216,7 @@ CREATE TABLE Student_take_class (
     class_id INT,
     section_id CHAR(3),
     grade CHAR(2) NOT NULL,
+    units INT NOT NULL,
     PRIMARY KEY (student_id, class_id, section_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
@@ -265,4 +266,12 @@ CREATE TABLE Review_Session (
     date DATE NOT NULL,
     PRIMARY KEY (class_id, section_id, review_session_id),
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Student_Enrollment (
+    student_id CHAR(9),
+    quarter VARCHAR(20),
+    year INT,
+    PRIMARY KEY (student_id, quarter, year),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE 
 );
