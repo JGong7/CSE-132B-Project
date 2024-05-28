@@ -59,6 +59,15 @@ CREATE TABLE Phd_student (
     FOREIGN KEY (advisor) REFERENCES Faculty(name)
 );
 
+-- Student enrollment
+CREATE TABLE Student_Enrollment (
+    student_id CHAR(9),
+    quarter VARCHAR(20),
+    year INT,
+    PRIMARY KEY (student_id, quarter, year),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE 
+);
+
 -- Thesis committee
 CREATE TABLE Thesis_committee (
     student_id CHAR(9),
@@ -125,7 +134,8 @@ CREATE TABLE Degree (
     department VARCHAR(255) NOT NULL,
     concentration VARCHAR(255),
     upper_credits INT NOT NULL,
-    lower_credits INT NOT NULL
+    lower_credits INT NOT NULL, 
+    elective_credits INT NOT NULL
 );
 
 -- Pursuing
@@ -152,6 +162,18 @@ CREATE TABLE Course (
     department VARCHAR(255) NOT NULL,
     require_lab_work BOOLEAN NOT NULL,
     require_consent_of_instructor BOOLEAN NOT NULL
+);
+
+-- Course degree
+CREATE TABLE Course_degree (
+    course_id INT,
+    degree_id CHAR(4),
+    lower BOOLEAN NOT NULL,
+    upper BOOLEAN NOT NULL,
+    elective BOOLEAN NOT NULL,
+    PRIMARY KEY (course_id, degree_id),
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE,
+    FOREIGN KEY (degree_id) REFERENCES Degree(degree_id) ON DELETE CASCADE
 );
 
 -- Units
@@ -216,6 +238,7 @@ CREATE TABLE Student_take_class (
     class_id INT,
     section_id CHAR(3),
     grade CHAR(2) NOT NULL,
+    units INT NOT NULL,
     PRIMARY KEY (student_id, class_id, section_id),
     FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE,
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
