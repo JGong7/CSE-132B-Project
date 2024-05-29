@@ -63,6 +63,35 @@
                 }
                 pstmt.setInt(5, Integer.parseInt(units[i]));
                 updates += pstmt.executeUpdate();
+
+                //First, get the quarter and year associated with the classid
+                String getQuarterYear = "SELECT quarter, year FROM class WHERE class_id = ?";
+                pstmt = conn.prepareStatement(getQuarterYear);
+                pstmt.setInt(1, class_id);
+                ResultSet rs = pstmt.executeQuery();
+                String quarter = "";
+                int year = 0;
+                while (rs.next()){
+                    quarter = rs.getString("quarter");
+                    year = rs.getInt("year");
+                }
+                //Then, check if student is enrolled in that quarter
+                String checkEnrollment = "SELECT * FROM student_enrollment WHERE student_id = ? AND quarter = ? AND year = ?";
+                pstmt = conn.prepareStatement(checkEnrollment);
+                pstmt.setString(1, studentId);
+                pstmt.setString(2, quarter);
+                pstmt.setInt(3, year);
+                rs = pstmt.executeQuery();
+                if (!rs.next()){
+                    //If not, add them to student_enrollment
+                    String addEnrollment = "INSERT INTO student_enrollment (student_id, quarter, year) VALUES (?, ?, ?)";
+                    pstmt = conn.prepareStatement(addEnrollment);
+                    pstmt.setString(1, studentId);
+                    pstmt.setString(2, quarter);
+                    pstmt.setInt(3, year);
+                    pstmt.executeUpdate();
+                }
+                
             }
         } else if (action.equals("delete")){
             for (int i = 0; i < class_ids.length; i++) {
@@ -79,6 +108,35 @@
                 pstmt.setInt(2, class_id);
                 pstmt.setString(3, sectionIds[i]);
                 updates += pstmt.executeUpdate();
+
+                //First, get the quarter and year associated with the classid
+                String getQuarterYear = "SELECT quarter, year FROM class WHERE class_id = ?";
+                pstmt = conn.prepareStatement(getQuarterYear);
+                pstmt.setInt(1, class_id);
+                ResultSet rs = pstmt.executeQuery();
+                String quarter = "";
+                int year = 0;
+                while (rs.next()){
+                    quarter = rs.getString("quarter");
+                    year = rs.getInt("year");
+                }
+                //Then, check if the student still takes any class in that quarter. If not, delete from student_enrollment.
+                String checkEnrollment = "SELECT * FROM student_take_class stc JOIN class c ON stc.class_id = c.class_id WHERE stc.student_id = ? AND c.quarter = ? AND c.year = ?";
+                pstmt = conn.prepareStatement(checkEnrollment);
+                pstmt.setString(1, studentId);
+                pstmt.setString(2, quarter);
+                pstmt.setInt(3, year);
+                rs = pstmt.executeQuery();
+                if (!rs.next()){
+                    //If not, add them to student_enrollment
+                    String deleteEnrollment = "DELETE FROM student_enrollment WHERE student_id = ? AND quarter = ? AND year = ?";
+                    pstmt = conn.prepareStatement(deleteEnrollment);
+                    pstmt.setString(1, studentId);
+                    pstmt.setString(2, quarter);
+                    pstmt.setInt(3, year);
+                    pstmt.executeUpdate();
+                }
+
             }
         } else if (action.equals("update")){
             for (int i = 0; i < class_ids.length; i++) {
@@ -106,7 +164,7 @@
                 pstmt.setString(3, studentId);
                 pstmt.setInt(4, class_id);
                 pstmt.setString(5, sectionIds[i]);
-                if (statuses[i].equals("taken")) s{
+                if (statuses[i].equals("taken")) {
                     pstmt.setString(1, grades[gradeIndex]);
                     gradeIndex ++;
                 } else {

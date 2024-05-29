@@ -289,3 +289,11 @@ CREATE TABLE Review_Session (
     PRIMARY KEY (class_id, section_id, review_session_id),
     FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
+
+CREATE TABLE Student_Enrollment (
+    student_id CHAR(9),
+    quarter VARCHAR(20),
+    year INT,
+    PRIMARY KEY (student_id, quarter, year),
+    FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE 
+);
