@@ -14,7 +14,6 @@
     String lastName = request.getParameter("lastName");
     String ssn = request.getParameter("ssn");
     String residentialStatus = request.getParameter("residentialStatus");
-    boolean enrolled = "true".equals(request.getParameter("enrolled"));
     String studentType = request.getParameter("studentType");
     out.println("Student Type: " + studentType + "<br>");
 
@@ -34,7 +33,7 @@
 
         int result1 = 0;
         if ("add".equals(action)) {
-            String sql = "INSERT INTO Student (student_id, first_name, middle_name, last_name, ssn, residential_status, enrolled) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Student (student_id, first_name, middle_name, last_name, ssn, residential_status) VALUES (?, ?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, studentId);
             pstmt.setString(2, firstName);
@@ -42,18 +41,16 @@
             pstmt.setString(4, lastName);
             pstmt.setString(5, ssn);
             pstmt.setString(6, residentialStatus);
-            pstmt.setBoolean(7, enrolled);
             result1 = pstmt.executeUpdate();
         } else if ("update".equals(action)) {
-            String sql = "UPDATE Student SET first_name = ?, middle_name = ?, last_name = ?, ssn = ?, residential_status = ?, enrolled = ? WHERE student_id = ?";
+            String sql = "UPDATE Student SET first_name = ?, middle_name = ?, last_name = ?, ssn = ?, residential_status = ? WHERE student_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, firstName);
             pstmt.setString(2, middleName);
             pstmt.setString(3, lastName);
             pstmt.setString(4, ssn);
             pstmt.setString(5, residentialStatus);
-            pstmt.setBoolean(6, enrolled);
-            pstmt.setString(7, studentId);
+            pstmt.setString(6, studentId);
             result1 = pstmt.executeUpdate();
         } else if ("delete".equals(action)) {
             String sql = "DELETE FROM Student WHERE student_id = ?";

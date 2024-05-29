@@ -63,13 +63,6 @@
             <label for="residentialStatus">Residential Status:</label>
             <input type="text" id="residentialStatus" name="residentialStatus">
         </div>
-        <div class="input-group">
-            <label for="enrolled">Enrolled:</label>
-            <select id="enrolled" name="enrolled" required>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
-            </select>
-        </div>
 
         <!-- Undergraduate Fields -->
         <div id="undergraduateFields" class="hidden">

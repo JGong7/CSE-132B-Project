@@ -132,7 +132,6 @@ CREATE TABLE Degree (
     degree_name VARCHAR(255) NOT NULL,
     type VARCHAR(50) NOT NULL,
     department VARCHAR(255) NOT NULL,
-    concentration VARCHAR(255),
     upper_credits INT NOT NULL,
     lower_credits INT NOT NULL, 
     elective_credits INT NOT NULL
@@ -174,6 +173,16 @@ CREATE TABLE Course_degree (
     PRIMARY KEY (course_id, degree_id),
     FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE,
     FOREIGN KEY (degree_id) REFERENCES Degree(degree_id) ON DELETE CASCADE
+);
+
+-- Concentration
+CREATE TABLE Concentration (
+    degree_id CHAR(4),
+    concentration VARCHAR(50),
+    course_id INT,
+    PRIMARY KEY (degree_id, concentration, course_id),
+    FOREIGN KEY (degree_id) REFERENCES Degree(degree_id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE
 );
 
 -- Units
@@ -296,4 +305,9 @@ CREATE TABLE Student_Enrollment (
     year INT,
     PRIMARY KEY (student_id, quarter, year),
     FOREIGN KEY (student_id) REFERENCES Student(student_id) ON DELETE CASCADE 
+);
+
+create table GRADE_CONVERSION(
+    LETTER_GRADE CHAR(2) NOT NULL,
+    NUMBER_GRADE DECIMAL(2,1)
 );

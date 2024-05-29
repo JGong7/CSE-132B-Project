@@ -64,29 +64,33 @@
                 <option value="true">True</option>
             </select>
         </div>
-        <div class="checkbox-group">
-            <label>Grade Options:</label><br>
-            <input type="checkbox" id="gradeLetter" name="gradeOptions[]" value="Letter">
-            <label for="gradeLetter">Letter</label><br>
-            <input type="checkbox" id="gradePassNoPass" name="gradeOptions[]" value="Pass/No Pass">
-            <label for="gradePassNoPass">Pass/No Pass</label><br>
-            <input type="checkbox" id="gradeSU" name="gradeOptions[]" value="S/U">
-            <label for="gradeSU">S/U</label>
-        </div>
-        <div class="checkbox-group">
-            <label>Available Units:</label><br>
-            <input type="checkbox" id="unit1" name="availableUnits[]" value="1">
-            <label for="unit1">1</label><br>
-            <input type="checkbox" id="unit2" name="availableUnits[]" value="2">
-            <label for="unit2">2</label><br>
-            <input type="checkbox" id="unit3" name="availableUnits[]" value="3">
-            <label for="unit3">3</label><br>
-            <input type="checkbox" id="unit4" name="availableUnits[]" value="4">
-            <label for="unit4">4</label><br>
-            <input type="checkbox" id="unit5" name="availableUnits[]" value="5">
-            <label for="unit5">5</label><br>
-            <input type="checkbox" id="unit6" name="availableUnits[]" value="6">
-            <label for="unit6">6</label>
+        <div id="degreeRequirementsContainer">
+            <div class="input-group">
+                <label for="degree">Degree ID:</label>
+                <input type="text" id="degree" name="degrees[]" required>
+                <button type="button" onclick="addDegreeRequirement()">Add Another Degree</button>
+            </div>
+            <div class="select-group">
+                <label for="satisfyLower">Satisfy Lower Degree Requirement:</label><br>
+                <select id="satisfyLower" name="satisfyDegreeRequirements[]">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label for="satisfyUpper">Satisfy Upper Degree Requirement:</label><br>
+                <select id="satisfyUpper" name="satisfyDegreeRequirements[]">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label for="satisfyElective">Satisfy Technical Elective Degree Requirement:</label><br>
+                <select id="satisfyElective" name="satisfyDegreeRequirements[]">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
         </div>
         <div id="prerequisitesContainer">
             <label>Prerequisites:</label>
@@ -97,6 +101,43 @@
     </form>
 
     <script>
+        function addDegreeRequirement() {
+            var container = document.getElementById('degreeRequirementsContainer');
+            var inputGroup = document.createElement('div');
+            inputGroup.className = 'input-group';
+            inputGroup.innerHTML = `
+                <input type="text" name="degrees[]" placeholder="Enter Degree ID" required>
+                <div class="select-group">
+                    <label for="satisfyLower">Satisfy Lower Degree Requirement:</label><br>
+                    <select id="satisfyLower" name="satisfyDegreeRequirements[]">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <div class="select-group">
+                    <label for="satisfyUpper">Satisfy Upper Degree Requirement:</label><br>
+                    <select id="satisfyUpper" name="satisfyDegreeRequirements[]">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <div class="select-group">
+                    <label for="satisfyElective">Satisfy Technical Elective Degree Requirement:</label><br>
+                    <select id="satisfyElective" name="satisfyDegreeRequirements[]">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <button type="button" class="remove-btn" onclick="removeDegreeRequirement(this)">Remove</button>
+            `;
+            container.appendChild(inputGroup);
+        }
+
+        function removeDegreeRequirement(btn) {
+            var inputGroup = btn.parentNode;
+            inputGroup.parentNode.removeChild(inputGroup);
+        }
+
         function addPrerequisiteInput() {
             var container = document.getElementById('prerequisitesContainer');
             var inputGroup = document.createElement('div');

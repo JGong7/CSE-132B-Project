@@ -17,7 +17,7 @@
 </head>
 <body>
     <h2>Enter Class Details to Search Roster</h2>
-    <form action="../../process_query/displayRoster.jsp" method="GET">
+    <form action="../../process_query/display_classRoster.jsp" method="GET">
         <div class="input-group">
             <label for="classId">Select a Class:</label>
             <select id="classId" name="classId" onchange="if(this.value) this.form.submit();">

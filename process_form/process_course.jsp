@@ -15,6 +15,8 @@
     boolean consentRequired = Boolean.parseBoolean(request.getParameter("consentOfInstructorRequired"));
     String[] gradeOptions = request.getParameterValues("gradeOptions[]");
     String[] availableUnits = request.getParameterValues("availableUnits[]");
+    String[] degrees = request.getParameterValues("degrees[]");
+    String[] satisfyDegreeRequirements = request.getParameterValues("satisfyDegreeRequirements[]");
     String[] prerequisites = request.getParameterValues("prerequisites[]");
 
     Connection conn = null;
@@ -62,6 +64,18 @@
                     pstmt.setString(2, option);
                     pstmt.executeUpdate();
                 }
+            }
+            
+            // Insert degrees
+            String sqlInsertCourseDegree = "INSERT INTO Course_degree (course_id, degree_id, lower, upper, elective) VALUES (?, ?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sqlInsertCourseDegree);
+            for (int i = 0; i < degrees.length; i++) {
+                pstmt.setInt(1, courseId);
+                pstmt.setString(2, degrees[i]);
+                pstmt.setBoolean(3, satisfyDegreeRequirements[i*3].equals("Yes"));
+                pstmt.setBoolean(4, satisfyDegreeRequirements[i*3+1].equals("Yes"));
+                pstmt.setBoolean(5, satisfyDegreeRequirements[i*3+2].equals("Yes"));
+                pstmt.executeUpdate();
             }
 
             // Insert prerequisites
@@ -113,6 +127,25 @@
                 for (String option : gradeOptions) {
                     pstmt.setInt(1, courseId);
                     pstmt.setString(2, option);
+                    pstmt.executeUpdate();
+                }
+            }
+
+            // Update degrees
+            if (degrees != null) {
+                String sqlDeleteCourseDegree = "DELETE FROM Course_degree WHERE course_id = ?";
+                pstmt = conn.prepareStatement(sqlDeleteCourseDegree);
+                pstmt.setInt(1, courseId);
+                pstmt.executeUpdate();
+
+                String sqlInsertCourseDegree = "INSERT INTO Course_degree (course_id, degree_id, lower, upper, elective) VALUES (?, ?, ?, ?, ?)";
+                pstmt = conn.prepareStatement(sqlInsertCourseDegree);
+                for (int i = 0; i < degrees.length; i++) {
+                    pstmt.setInt(1, courseId);
+                    pstmt.setString(2, degrees[i]);
+                    pstmt.setBoolean(3, satisfyDegreeRequirements[i*3].equals("Yes"));
+                    pstmt.setBoolean(4, satisfyDegreeRequirements[i*3+1].equals("Yes"));
+                    pstmt.setBoolean(5, satisfyDegreeRequirements[i*3+2].equals("Yes"));
                     pstmt.executeUpdate();
                 }
             }

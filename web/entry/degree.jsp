@@ -22,6 +22,11 @@
             color: red;
             margin-left: 5px;
         }
+        .concentration-container {
+            margin-left: 20px;
+            border: 1px dotted #666;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
@@ -49,8 +54,8 @@
                 <option value="B.S.">B.S.</option>
                 <option value="B.A.">B.A.</option>
                 <option value="B.S./M.S.">B.S./M.S.</option>
-                <option value="M.S">M.S.</option>
-                <option value="M.A">M.A.</option>
+                <option value="M.S.">M.S.</option>
+                <option value="M.A.">M.A.</option>
                 <option value="M.Eng">M.Eng</option>
                 <option value="MFA">MFA</option>
                 <option value="MAS">MAS</option>
@@ -61,39 +66,75 @@
             <label for="department">Department:</label>
             <input type="text" id="department" name="department" required>
         </div>
+        <div id="concentrationsContainer" style="display:none;">
+            <button type="button" onclick="addConcentration()">Add Concentration</button>
+        </div>
         <div class="input-group">
-            <label for="concentration">Degree Concentration:</label>
-            <input type="text" id="concentration" name="concentration">
+            <label for="lowerUnits">Required Number of Lower Units:</label>
+            <input type="text" id="lowerUnits" name="lowerUnits">
         </div>
         <div class="input-group">
             <label for="upperUnits">Required Number of Upper Units:</label>
             <input type="text" id="upperUnits" name="upperUnits">
         </div>
         <div class="input-group">
-            <label for="lowerUnits">Required Number of Lower Units:</label>
-            <input type="text" id="lowerUnits" name="lowerUnits">
+            <label for="elecUnits">Required Number of Technical Elective Units:</label>
+            <input type="text" id="elecUnits" name="elecUnits">
         </div>
         <br>
         <input type="submit" value="Submit Degree Requirement">
     </form>
 
     <script>
-            var selectType = document.getElementById('type');
-            var concentrationGroup = document.getElementById('concentration').parentNode;
-            var concentrationInput = document.getElementById('concentration');
-    
-            // Hide the concentration input field initially
-            concentrationGroup.style.display = 'none';
-    
-            selectType.addEventListener('change', function() {
-                // Check the selected value
-                if (this.value === 'B.S.' || this.value === 'B.A.' || this.value === 'PhD') {
-                    concentrationGroup.style.display = 'none';
-                    concentrationInput.value = '';
-                } else {
-                    concentrationGroup.style.display = 'block';
-                }
-            });
+        var selectType = document.getElementById('type');
+        var concentrationsContainer = document.getElementById('concentrationsContainer');
+
+        selectType.addEventListener('change', function() {
+            if (this.value === 'M.S.' || this.value === 'M.A.' || this.value === 'M.Eng' || this.value === 'MFA' || this.value === 'MAS') {
+                concentrationsContainer.style.display = 'block';
+            } else {
+                concentrationsContainer.style.display = 'none';
+            }
+        });
+
+        function addConcentration() {
+            var container = document.createElement('div');
+            container.className = 'concentration-container';
+            container.innerHTML = `
+                <div class="input-group">
+                    <label>Concentration:</label>
+                    <input type="text" name="concentration[]" required>
+                    <button type="button" class="remove-btn" onclick="removeConcentration(this)">Remove</button>
+                </div>
+                <button type="button" onclick="addCourse(this.parentNode)">Add Course</button>
+            `;
+            concentrationsContainer.appendChild(container);
+            concentrationCount++;
+        }
+
+        function addCourse(concentrationDiv) {
+            var courseInput = document.createElement('div');
+            courseInput.className = 'input-group';
+            courseInput.innerHTML = `
+                <label>Course ID:</label>
+                <input type="number" name="courseId` + getConcentrationIndex(concentrationDiv) + `[]" required>
+                <button type="button" class="remove-btn" onclick="removeInput(this)">Remove</button>
+            `;
+            concentrationDiv.appendChild(courseInput);
+        }
+
+        function getConcentrationIndex(concentrationDiv) {
+            return Array.from(concentrationsContainer.children).indexOf(concentrationDiv) - 1;
+        }
+
+        function removeConcentration(button) {
+            button.parentNode.parentNode.remove();
+            concentrationCount--;
+        }
+
+        function removeInput(button) {
+            button.parentNode.remove();
+        }
     </script>
 </body>
 </html>
