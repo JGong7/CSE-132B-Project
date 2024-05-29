@@ -103,6 +103,10 @@
             cumulativeUnits += totalUnit;
             cumulativeGP += gradePoint;
         }
+        double gpa =(cumulativeGP / cumulativeUnits) * 4;
+        out.println("<td>" + "Cumulative GPA:" + "</td>"); 
+        out.println("<td>" + Double.toString(gpa) + "</td>");
+        out.println("</tr>");
 
 
 
