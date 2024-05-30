@@ -46,7 +46,7 @@
                             ResultSet rs2 = pstmt.executeQuery();
                             while (rs2.next()){
                                 String ssn = rs2.getString("ssn");
-                                String displayText = "SSN: " + rs2.getString("ssn") + " First Name: " + rs2.getString("first_name") + " Middle Name: " + rs2.getString("middle_name") + " Last Name: " + rs2.getString("last_name");
+                                String displayText = "student_id: " + student_id + " SSN: " + rs2.getString("ssn") + " First Name: " + rs2.getString("first_name") + " Middle Name: " + rs2.getString("middle_name") + " Last Name: " + rs2.getString("last_name");
                                 out.println("<option value=\"" + ssn + "\">" + displayText + "</a >");
                             } 
                         }
