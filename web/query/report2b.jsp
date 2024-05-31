@@ -20,7 +20,7 @@
 </head>
 <body>
     <h2>Student Entry Form</h2>
-    <form action="../../process_form/report2b.jsp" method="POST">
+    <form action="../../process_query/report2b.jsp" method="POST">
         <select id="sid" name="sid">
                 <option value="">Select a section</option>
                 <% 

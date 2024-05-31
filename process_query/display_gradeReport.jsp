@@ -70,12 +70,11 @@
             pstmt.setInt(2, Integer.parseInt(courseId));
 
             // define sqlGrade for calculating average grade later
-            sqlGrade = "SELECT grade, COUNT(*) as count " +
+            sqlGrade = "SELECT grade, units " +
                         "FROM Student_take_class stc " +
                         "JOIN Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id " +
                         "WHERE s.professor = ? AND stc.class_id IN " +
-                            "(SELECT class_id FROM Class WHERE course_id = ?) " +
-                        "GROUP BY grade";
+                            "(SELECT class_id FROM Class WHERE course_id = ?)";
         } else {
             // Given only course id
             sql = "SELECT CASE WHEN grade IN ('A+', 'A', 'A-') THEN 'A' " +
@@ -101,10 +100,10 @@
         // Calculate and display average grade
         if (!sqlGrade.equals("")) {
             out.println("<p>Calculating average grade...</p>");
-            String sqlAvgGrade = "SELECT SUM(gc.number_grade * count) / SUM(count) as avg_grade " +
-                                "FROM (" +
-                                sqlGrade +
-                                ") t " +
+            String sqlAvgGrade = "SELECT SUM(gc.number_grade * units) / SUM(units) as avg_grade " +
+                                "FROM (" + 
+                                sqlGrade + 
+                                ") t " + 
                                 "JOIN grade_conversion gc ON t.grade = gc.letter_grade";
             pstmtAvgGrade = conn.prepareStatement(sqlAvgGrade);
             

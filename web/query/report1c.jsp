@@ -20,7 +20,7 @@
 </head>
 <body>
     <h2>Grade Report of Student X</h2>
-    <form action="../../process_form/report1c.jsp" method="POST">
+    <form action="../../process_query/report1c.jsp" method="POST">
         <select id="ssn" name="ssn" onchange="if(this.value) this.form.submit();">
                 <option value="">Select a student by ssn</option>
                 <% 

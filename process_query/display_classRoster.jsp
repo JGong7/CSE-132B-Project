@@ -35,15 +35,15 @@
 
         String query = "";
         if (classId != null && !classId.isEmpty()) {
-            query = "SELECT s.student_id, s.first_name, s.last_name, e.units, e.grading_option " +
-                    "FROM Enrollment e JOIN Student s ON e.student_id = s.student_id " +
-                    "WHERE e.class_id = ?";
+            query = "SELECT s.student_id, s.first_name, s.last_name, stc.units, stc.grade_option " +
+                    "FROM Student_take_class stc JOIN Student s ON stc.student_id = s.student_id " +
+                    "WHERE stc.class_id = ?";
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, Integer.parseInt(classId));
         } else {
-            query = "SELECT s.student_id, s.first_name, s.last_name, e.units, e.grading_option " +
-                    "FROM Class c JOIN Enrollment e ON c.class_id = e.class_id " +
-                    "JOIN Student s ON e.student_id = s.student_id " +
+            query = "SELECT s.student_id, s.first_name, s.last_name, stc.units, stc.grade_option " +
+                    "FROM Class c JOIN Student_take_class stc ON c.class_id = stc.class_id " +
+                    "JOIN Student s ON stc.student_id = s.student_id " +
                     "WHERE c.title = ? AND c.quarter = ? AND c.year = ?";
             pstmt = conn.prepareStatement(query);
             pstmt.setString(1, title);
@@ -64,7 +64,7 @@
                 out.println("<td>" + rs.getString("first_name") + "</td>");
                 out.println("<td>" + rs.getString("last_name") + "</td>");
                 out.println("<td>" + rs.getInt("units") + "</td>");
-                out.println("<td>" + rs.getString("grading_option") + "</td>");
+                out.println("<td>" + rs.getString("grade_option") + "</td>");
                 out.println("</tr>");
             } while (rs.next());
             out.println("</table>");

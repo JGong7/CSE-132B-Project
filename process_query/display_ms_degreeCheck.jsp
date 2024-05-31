@@ -79,32 +79,50 @@
                 rs2.close();
                 pstmt2.close();
 
-                // List the courses not yet taken for this concentration
-                String sqlNextAvailable = "SELECT Class.course_id, MinClass.next_year, CASE MinClass.next_quarter WHEN 1 THEN 'Winter' WHEN 2 THEN 'Spring' WHEN 3 THEN 'Fall' END AS next_quarter " +
+                // Select the courses that the student has not taken yet
+                String sqlNotTaken = "SELECT course_id " +
+                                    "FROM Concentration " +
+                                    "WHERE degree_id = ? AND concentration = ? AND course_id NOT IN (" +
+                                        "SELECT Class.course_id " +
                                         "FROM Class " +
-                                        "JOIN Concentration ON Class.course_id = Concentration.course_id " +
-                                        "JOIN (" +
-                                            "SELECT Class.course_id, MIN(year) AS next_year, MIN(CASE quarter WHEN 'Winter' THEN 1 WHEN 'Spring' THEN 2 WHEN 'Fall' THEN 3 END) AS next_quarter " +
+                                        "JOIN Student_take_class ON Class.class_id = Student_take_class.class_id " +
+                                        "WHERE student_id = ? AND (grade_option = 'Letter' AND EXISTS (" +
+                                            "SELECT * FROM grade_conversion WHERE grade = Student_take_class.grade" +
+                                        "))" +
+                                    ")";
+                PreparedStatement pstmtNotTaken = conn.prepareStatement(sqlNotTaken);
+                pstmtNotTaken.setString(1, degreeId);
+                pstmtNotTaken.setString(2, concentration);
+                pstmtNotTaken.setString(3, studentId);
+                ResultSet rsNotTaken = pstmtNotTaken.executeQuery();
+
+                // For each course not taken yet, check if it will be available in the future
+                while (rsNotTaken.next()) {
+                    int courseId = rsNotTaken.getInt("course_id");
+
+                    String sqlNextAvailable = "SELECT year, quarter " +
                                             "FROM Class " +
-                                            "JOIN Concentration ON Class.course_id = Concentration.course_id " +
-                                            "WHERE degree_id = ? AND concentration = ? AND Class.course_id NOT IN (SELECT Class.course_id FROM Student_take_class JOIN Class ON Student_take_class.class_id = Class.class_id WHERE student_id = ?) " +
-                                            "AND (year > 2018 OR (year = 2018 AND quarter = 'Fall')) " +
-                                            "GROUP BY Class.course_id " +
-                                        ") MinClass ON Class.course_id = MinClass.course_id AND year = MinClass.next_year AND CASE quarter WHEN 'Winter' THEN 1 WHEN 'Spring' THEN 2 WHEN 'Fall' THEN 3 END = MinClass.next_quarter " +
-                                        "ORDER BY next_year, next_quarter";
-                pstmt2 = conn.prepareStatement(sqlNextAvailable);
-                pstmt2.setString(1, degreeId);
-                pstmt2.setString(2, concentration);
-                pstmt2.setString(3, studentId);
-                rs2 = pstmt2.executeQuery();
-                while (rs2.next()) {
-                    int courseId = rs2.getInt("course_id");
-                    int nextYear = rs2.getInt("next_year");
-                    String nextQuarter = rs2.getString("next_quarter");
-                    out.println("<p>Course not yet taken: " + courseId + ", next time: " + nextQuarter + " " + nextYear + "</p>");
+                                            "WHERE course_id = ? AND (year > 2018 OR (year = 2018 AND quarter = 'Fall')) " +
+                                            "ORDER BY year, CASE quarter WHEN 'Winter' THEN 1 WHEN 'Spring' THEN 2 WHEN 'Fall' THEN 3 END " +
+                                            "LIMIT 1";
+                    PreparedStatement pstmtNextAvailable = conn.prepareStatement(sqlNextAvailable);
+                    pstmtNextAvailable.setInt(1, courseId);
+                    ResultSet rsNextAvailable = pstmtNextAvailable.executeQuery();
+
+                    if (rsNextAvailable.next()) {
+                        int nextYear = rsNextAvailable.getInt("year");
+                        String nextQuarter = rsNextAvailable.getString("quarter");
+                        out.println("<p>Course not yet taken: " + courseId + ", next time: " + nextQuarter + " " + nextYear + "</p>");
+                    } else {
+                        out.println("<p>Course not yet taken: " + courseId + ", not available in the future</p>");
+                    }
+
+                    rsNextAvailable.close();
+                    pstmtNextAvailable.close();
                 }
-                rs2.close();
-                pstmt2.close();
+
+                rsNotTaken.close();
+                pstmtNotTaken.close();
             }
         }
     } catch (Exception e) {
