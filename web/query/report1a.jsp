@@ -34,7 +34,7 @@
                         Class.forName("org.postgresql.Driver");
                         conn = DriverManager.getConnection(url, user, password);
 
-                        String query = "SELECT DISTINCT student_id FROM student_enrollment";
+                        String query = "SELECT DISTINCT student_id FROM student_enrollment WHERE quarter = 'Spring' AND year = 2018";
                         pstmt = conn.prepareStatement(query);
                         rs = pstmt.executeQuery();
                         while (rs.next()) {
