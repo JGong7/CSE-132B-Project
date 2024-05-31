@@ -39,7 +39,7 @@
                         rs = pstmt.executeQuery();
                         while (rs.next()) {
                             // out.println("<option value=\"" + displayText + "\">" + displayText + "</a >");
-                            query = "SELECT * FROM class WHERE class_id = ?";
+                            query = "SELECT * FROM class WHERE class_id = ? AND quarter = 'Spring' AND year = 2018";
                             pstmt = conn.prepareStatement(query);
                             pstmt.setInt(1, rs.getInt("class_id"));
                             ResultSet rs2 = pstmt.executeQuery();

@@ -151,7 +151,7 @@
             out.println("<td>" + rs.getString("time_end") + "</td>");
             out.println("<td>" + rs.getString("days_of_week") + "</td>");
             out.println("</tr>");
-            sql = "SELECT FROM Review_session WHERE class_id = ? AND section_id = ?";
+            sql = "SELECT * FROM Review_session WHERE class_id = ? AND section_id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, rs.getInt("class_id"));
             pstmt.setString(2, rs.getString("section_id"));
@@ -162,6 +162,16 @@
                 reviewSession.add(rs2.getString("time_start"));
                 reviewSession.add(rs2.getString("time_end"));
                 updatedFreeHours = updateReviewSessions(updatedFreeHours, reviewSession);
+                out.println("<tr>");
+                out.println("<td>" + rs.getString("student_id") + "</td>");
+                out.println("<td>" + rs.getString("class_id") + "</td>");
+                out.println("<td>" + rs.getString("section_id") + "</td>");
+                out.println("<td>" + rs2.getString("date") + "</td>");
+                out.println("<td>" + "(review session)" + "</td>");
+                out.println("<td>" + rs2.getString("time_start") + "</td>");
+                out.println("<td>" + rs2.getString("time_end") + "</td>");
+                out.println("<td>" + "(review session)"  + "</td>");
+                out.println("</tr>");
             }
         }
 
