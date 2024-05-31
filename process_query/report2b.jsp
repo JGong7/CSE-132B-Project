@@ -184,9 +184,10 @@
 
         // print the sorted hours
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("HH:mm:ss");
         for (ZonedDateTime hour : sortedHours) {
             //out.println("<p>" + hour + "</p>");
-            out.println("<p>" + hour.format(formatter) + " " + hour.getDayOfWeek().toString() + "</p>");
+            out.println("<p>" + hour.format(formatter) + "-" + hour.plusHours(1).format(formatter2) + " " + hour.getDayOfWeek().toString() + "</p>");
         }
         
 
