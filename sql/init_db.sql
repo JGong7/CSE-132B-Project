@@ -232,7 +232,7 @@ CREATE TABLE Teaching_schedule (
 
 -- Section
 CREATE TABLE Section (
-    section_id CHAR(3),
+    section_id VARCHAR(3),
     class_id INT,
     professor VARCHAR(50) NOT NULL,
     enrollment_limit INT NOT NULL,

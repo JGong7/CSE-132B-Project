@@ -81,7 +81,7 @@
         </div>
         <div>
             <label for="student_id">Student ID:</label>
-            <input type="text" id="student_id" name="student_id" required pattern="[A-Za-z0-9]{9}" title="Student ID must be 9 alphanumeric characters.">
+            <input type="text" id="student_id" name="student_id">
         </div>
         <div id="classContainer">
             <label>Classes:</label>
@@ -89,7 +89,7 @@
                 <label>Class ID:</label>
                 <input type="text" name="class_id[]" required>
                 <label>Section ID:</label>
-                <input type="text" name="section_id[]" required pattern="[A-Za-z0-9]{3}" title="Section ID must be 3 alphanumeric characters.">
+                <input type="text" name="section_id[]">
                 <label>Grading Option:</label>
                 <select name="grading_option[]">
                     <option value="P/NP">P/NP</option>
