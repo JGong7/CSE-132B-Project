@@ -39,39 +39,60 @@
 
         // query 3.a.2
         if (!professor.isEmpty() && !quarter.isEmpty() && !year.isEmpty()) {
-            // Given course id, professor, quarter, and year
+            // // Given course id, professor, quarter, and year
+            // sql = "SELECT CASE WHEN grade IN ('A+', 'A', 'A-') THEN 'A' " +
+            //     "WHEN grade IN ('B+', 'B', 'B-') THEN 'B' " +
+            //     "WHEN grade IN ('C+', 'C', 'C-') THEN 'C' " +
+            //     "WHEN grade IN ('D+', 'D', 'D-') THEN 'D' " +
+            //     "ELSE 'other' END AS grade_category, COUNT(*) as count " +
+            //     "FROM Student_take_class stc " +
+            //     "JOIN Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id " +
+            //     "WHERE s.professor = ? AND stc.class_id IN " +
+            //         "(SELECT class_id FROM Class WHERE course_id = ? AND quarter = ? AND year = ?) " +
+            //     "GROUP BY grade_category";
+
+            // Rebuild with views
             sql = "SELECT CASE WHEN grade IN ('A+', 'A', 'A-') THEN 'A' " +
                 "WHEN grade IN ('B+', 'B', 'B-') THEN 'B' " +
                 "WHEN grade IN ('C+', 'C', 'C-') THEN 'C' " +
                 "WHEN grade IN ('D+', 'D', 'D-') THEN 'D' " +
-                "ELSE 'other' END AS grade_category, COUNT(*) as count " +
-                "FROM Student_take_class stc " +
-                "JOIN Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id " +
-                "WHERE s.professor = ? AND stc.class_id IN " +
-                    "(SELECT class_id FROM Class WHERE course_id = ? AND quarter = ? AND year = ?) " +
+                "ELSE 'other' END AS grade_category, SUM(grade_count) as count " +
+                "FROM CPQG " +
+                "WHERE course_id = ? AND professor = ? AND quarter = ? AND year = ? " +
                 "GROUP BY grade_category";
+
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, professor);
-            pstmt.setInt(2, Integer.parseInt(courseId));
+            pstmt.setInt(1, Integer.parseInt(courseId));
+            pstmt.setString(2, professor);
             pstmt.setString(3, quarter);
             pstmt.setInt(4, Integer.parseInt(year));
         }
         // query 3.a.3
         else if (!professor.isEmpty()) {
-            // Given course id and professor
+            // // Given course id and professor
+            // sql = "SELECT CASE WHEN grade IN ('A+', 'A', 'A-') THEN 'A' " +
+            //     "WHEN grade IN ('B+', 'B', 'B-') THEN 'B' " +
+            //     "WHEN grade IN ('C+', 'C', 'C-') THEN 'C' " +
+            //     "WHEN grade IN ('D+', 'D', 'D-') THEN 'D' " +
+            //     "ELSE 'other' END AS grade_category, COUNT(*) as count " +
+            //     "FROM Student_take_class stc " +
+            //     "JOIN Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id " +
+            //     "WHERE s.professor = ? AND stc.class_id IN " +
+            //         "(SELECT class_id FROM Class WHERE course_id = ?) " +
+            //     "GROUP BY grade_category";
+
+            // Rebuild with views
             sql = "SELECT CASE WHEN grade IN ('A+', 'A', 'A-') THEN 'A' " +
                 "WHEN grade IN ('B+', 'B', 'B-') THEN 'B' " +
                 "WHEN grade IN ('C+', 'C', 'C-') THEN 'C' " +
                 "WHEN grade IN ('D+', 'D', 'D-') THEN 'D' " +
-                "ELSE 'other' END AS grade_category, COUNT(*) as count " +
-                "FROM Student_take_class stc " +
-                "JOIN Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id " +
-                "WHERE s.professor = ? AND stc.class_id IN " +
-                    "(SELECT class_id FROM Class WHERE course_id = ?) " +
+                "ELSE 'other' END AS grade_category, SUM(grade_count) as count " +
+                "FROM CPG " +
+                "WHERE course_id = ? AND professor = ? " +
                 "GROUP BY grade_category";
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, professor);
-            pstmt.setInt(2, Integer.parseInt(courseId));
+            pstmt.setInt(1, Integer.parseInt(courseId));
+            pstmt.setString(2, professor);
 
             // query 3.a.5, define sqlGrade for calculating average grade later
             sqlGrade = "SELECT grade, units " +

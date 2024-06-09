@@ -314,7 +314,28 @@ CREATE TABLE GRADE_CONVERSION(
     NUMBER_GRADE DECIMAL(2,1)
 );
 
+-- 4.1: Trigger to check overlapping meetings
+CREATE OR REPLACE FUNCTION check_overlapping_meetings() RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM Meeting
+        WHERE class_id = NEW.class_id
+        AND section_id = NEW.section_id
+        AND ((NEW.time_start, NEW.time_end) OVERLAPS (time_start, time_end))
+        AND (days_of_week LIKE '%' || NEW.days_of_week || '%'
+             OR NEW.days_of_week LIKE '%' || days_of_week || '%')
+        AND meeting_id != NEW.meeting_id
+    ) THEN
+        RAISE EXCEPTION 'Overlapping meetings of a section are not allowed';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE TRIGGER check_overlapping_meetings_trigger
+BEFORE INSERT OR UPDATE ON Meeting
+FOR EACH ROW EXECUTE PROCEDURE check_overlapping_meetings();
 
 -- 4.2: Trigger to check enrollment limit in the Student_take_class table
 CREATE OR REPLACE FUNCTION check_enrollment_limit()
@@ -323,22 +344,18 @@ DECLARE
     current_enrollments INT;
     max_limit INT;
 BEGIN
-    -- Get the current number of enrollments for the section
     SELECT COUNT(*) INTO current_enrollments
     FROM Student_take_class
     WHERE class_id = NEW.class_id AND section_id = NEW.section_id;
 
-    -- Get the enrollment limit for the section
     SELECT enrollment_limit INTO max_limit
     FROM Section
     WHERE class_id = NEW.class_id AND section_id = NEW.section_id;
 
-    -- Check if adding another enrollment would exceed the limit
     IF current_enrollments >= max_limit THEN
         RAISE EXCEPTION 'Enrollment limit of % for class %, section % has been reached. Enrollment rejected.', max_limit, NEW.class_id, NEW.section_id;
     END IF;
 
-    -- Proceed with the insertion if under the limit
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -348,36 +365,57 @@ BEFORE INSERT ON Student_take_class
 FOR EACH ROW
 EXECUTE PROCEDURE check_enrollment_limit();
 
+-- 4.3: Trigger to check professor schedule
+CREATE OR REPLACE FUNCTION check_professor_schedule() RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM Meeting AS M1
+        JOIN Section AS S1 ON M1.class_id = S1.class_id AND M1.section_id = S1.section_id
+        JOIN Section AS S2 ON S2.class_id = NEW.class_id AND S2.section_id = NEW.section_id
+        WHERE S1.professor = S2.professor
+        AND ((M1.time_start, M1.time_end) OVERLAPS (NEW.time_start, NEW.time_end))
+        AND ((M1.date_start, M1.date_end) OVERLAPS (NEW.date_start, NEW.date_end))
+        AND (M1.days_of_week LIKE '%' || NEW.days_of_week || '%'
+             OR NEW.days_of_week LIKE '%' || M1.days_of_week || '%')
+        AND M1.meeting_id != NEW.meeting_id
+    ) THEN
+        RAISE EXCEPTION 'A professor cannot have multiple sections at the same time';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
--- 5.1: CPQG view
-CREATE VIEW CPQG AS
+CREATE TRIGGER check_professor_schedule_trigger
+BEFORE INSERT OR UPDATE ON Meeting
+FOR EACH ROW EXECUTE PROCEDURE check_professor_schedule();
+
+-- 5.1: CPQG view and trigger
+CREATE MATERIALIZED VIEW CPQG AS
 SELECT 
-    Class.course_id AS X, 
-    Section.professor AS Y, 
-    CONCAT(Class.year, ' ', Class.quarter) AS Z, 
-    stc.grade AS W,
-    COUNT(*) as count
+    c.course_id, s.professor, c.quarter, c.year, stc.grade, COUNT(*) as grade_count
 FROM 
     Student_take_class stc
 JOIN 
-    Section ON stc.section_id = Section.section_id AND stc.class_id = Section.class_id 
+    Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id 
 JOIN 
-    Class ON Section.class_id = Class.class_id
+    Class c ON stc.class_id = c.class_id
 GROUP BY 
-    X, Y, Z, W;
+    course_id, professor, quarter, year, grade;
 
--- 5.1: Trigger to update the CPQG view
+-- Trigger to update CPQG view on insert
 CREATE OR REPLACE FUNCTION update_CPQG() RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO CPQG (X, Y, Z, W, count)
+    INSERT INTO CPQG (course_id, professor, quarter, year, grade, grade_count)
     VALUES (
         (SELECT course_id FROM Class WHERE class_id = NEW.class_id),
         (SELECT professor FROM Section WHERE section_id = NEW.section_id AND class_id = NEW.class_id),
-        (SELECT CONCAT(year, ' ', quarter) FROM Class WHERE class_id = NEW.class_id),
+        (SELECT quarter FROM Class WHERE class_id = NEW.class_id),
+		(SELECT year FROM Class WHERE class_id = NEW.class_id),
         NEW.grade,
         1
     )
-    ON CONFLICT (X, Y, Z, W) DO UPDATE SET count = CPQG.count + 1;
+    ON CONFLICT (course_id, professor, quarter, year, grade) DO UPDATE SET grade_count = CPQG.grade_count + 1;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -385,3 +423,35 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_CPQG
 AFTER INSERT ON Student_take_class
 FOR EACH ROW EXECUTE PROCEDURE update_CPQG();
+
+
+-- 5.2: CPG view and trigger
+CREATE MATERIALIZED VIEW CPG AS
+SELECT 
+    c.course_id, s.professor, stc.grade, COUNT(*) as grade_count
+FROM 
+    Student_take_class stc 
+JOIN 
+    Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id 
+JOIN 
+    Class c ON stc.class_id = c.class_id
+GROUP BY 
+    course_id, professor, grade;
+
+CREATE OR REPLACE FUNCTION update_CPG() RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO CPG (course_id, professor, grade, grade_count)
+    VALUES (
+        (SELECT course_id FROM Class WHERE class_id = NEW.class_id),
+        (SELECT professor FROM Section WHERE section_id = NEW.section_id AND class_id = NEW.class_id),
+        NEW.grade,
+        1
+    )
+    ON CONFLICT (course_id, professor, grade) DO UPDATE SET grade_count = CPG.grade_count + 1;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_CPG
+AFTER INSERT ON Student_take_class
+FOR EACH ROW EXECUTE PROCEDURE update_CPG();
