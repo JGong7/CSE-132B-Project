@@ -336,3 +336,29 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER check_overlapping_meetings_trigger
 BEFORE INSERT OR UPDATE ON Meeting
 FOR EACH ROW EXECUTE PROCEDURE check_overlapping_meetings();
+
+-- Trigger to check professor schedule
+
+CREATE OR REPLACE FUNCTION check_professor_schedule() RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM Meeting AS M1
+        JOIN Section AS S1 ON M1.class_id = S1.class_id AND M1.section_id = S1.section_id
+        JOIN Section AS S2 ON S2.class_id = NEW.class_id AND S2.section_id = NEW.section_id
+        WHERE S1.professor = S2.professor
+        AND ((M1.time_start, M1.time_end) OVERLAPS (NEW.time_start, NEW.time_end))
+        AND ((M1.date_start, M1.date_end) OVERLAPS (NEW.date_start, NEW.date_end))
+        AND (M1.days_of_week LIKE '%' || NEW.days_of_week || '%'
+             OR NEW.days_of_week LIKE '%' || M1.days_of_week || '%')
+        AND M1.meeting_id != NEW.meeting_id
+    ) THEN
+        RAISE EXCEPTION 'A professor cannot have multiple sections at the same time';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_professor_schedule_trigger
+BEFORE INSERT OR UPDATE ON Meeting
+FOR EACH ROW EXECUTE PROCEDURE check_professor_schedule();
