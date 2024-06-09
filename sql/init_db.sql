@@ -362,3 +362,39 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER check_professor_schedule_trigger
 BEFORE INSERT OR UPDATE ON Meeting
 FOR EACH ROW EXECUTE PROCEDURE check_professor_schedule();
+
+CREATE MATERIALIZED VIEW CPG AS
+SELECT 
+    s.professor AS Y, 
+    c.course_id AS X, 
+    stc.grade AS Z, 
+    COUNT(*) as grade_count
+FROM 
+    Student_take_class stc 
+JOIN 
+    Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id 
+JOIN 
+    Class c ON stc.class_id = c.class_id
+GROUP BY 
+    s.professor, 
+    c.course_id, 
+    stc.grade;
+
+CREATE OR REPLACE FUNCTION refresh_cpg() RETURNS TRIGGER AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW CPG;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER refresh_cpg_after_insert_or_update_or_delete
+AFTER INSERT OR UPDATE OR DELETE ON Student_take_class
+FOR EACH ROW EXECUTE PROCEDURE refresh_cpg();
+
+CREATE TRIGGER refresh_cpg_after_insert_or_update_or_delete
+AFTER INSERT OR UPDATE OR DELETE ON Section
+FOR EACH ROW EXECUTE PROCEDURE refresh_cpg();
+
+CREATE TRIGGER refresh_cpg_after_insert_or_update_or_delete
+AFTER INSERT OR UPDATE OR DELETE ON Class
+FOR EACH ROW EXECUTE PROCEDURE refresh_cpg();
