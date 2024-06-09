@@ -28,25 +28,14 @@
         String password = "James2085";
         Class.forName("org.postgresql.Driver");
         conn = DriverManager.getConnection(url, user, password);
+        conn.setAutoCommit(false);
 
         int gradeIndex = 0;
-        
 
         if (action.equals("add")){
             // add into Student_take_class no matter what, then add to enrollment if currently taking.
             for (int i = 0; i < class_ids.length; i++) {
                 int class_id = Integer.parseInt(class_ids[i]);
-                if (!statuses[i].equals("taken")){
-                    String enroll_sql = "INSERT INTO Enrollment (student_id, class_id, section_id, enrollment_type, grading_option, units) VALUES (?, ?, ?, ?, ?, ?)";
-                    pstmt = conn.prepareStatement(enroll_sql);
-                    pstmt.setString(1, studentId);
-                    pstmt.setInt(2, class_id);
-                    pstmt.setString(3, sectionIds[i]);
-                    pstmt.setString(4, statuses[i]);
-                    pstmt.setString(5, grading_options[i]);
-                    pstmt.setInt(6, Integer.parseInt(units[i]));
-                    updates += pstmt.executeUpdate();
-                }
 
                 String sql = "INSERT INTO Student_take_class (student_id, class_id, section_id, grade, units, grade_option) VALUES (?, ?, ?, ?, ?, ?)";
                 pstmt = conn.prepareStatement(sql);
@@ -62,6 +51,18 @@
                 pstmt.setInt(5, Integer.parseInt(units[i]));
                 pstmt.setString(6, grading_options[i]);
                 updates += pstmt.executeUpdate();
+
+                if (!statuses[i].equals("taken")){
+                    String enroll_sql = "INSERT INTO Enrollment (student_id, class_id, section_id, enrollment_type, grading_option, units) VALUES (?, ?, ?, ?, ?, ?)";
+                    pstmt = conn.prepareStatement(enroll_sql);
+                    pstmt.setString(1, studentId);
+                    pstmt.setInt(2, class_id);
+                    pstmt.setString(3, sectionIds[i]);
+                    pstmt.setString(4, statuses[i]);
+                    pstmt.setString(5, grading_options[i]);
+                    pstmt.setInt(6, Integer.parseInt(units[i]));
+                    updates += pstmt.executeUpdate();
+                }
 
                 // First, get the quarter and year associated with the classid
                 String getQuarterYear = "SELECT quarter, year FROM class WHERE class_id = ?";
@@ -177,6 +178,8 @@
                 updates += pstmt.executeUpdate();
             }
         }
+
+        conn.commit();
         out.println("<p>Data successfully inserted for " + updates + " classes.</p>");
 
     } catch (Exception e) {

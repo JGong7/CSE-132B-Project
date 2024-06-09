@@ -225,9 +225,10 @@ CREATE TABLE Class (
 CREATE TABLE Teaching_schedule (
     name VARCHAR(255),
     class_id INT,
-    PRIMARY KEY (name, class_id),
+    section_id CHAR(3),
+    PRIMARY KEY (name, class_id, section_id),
     FOREIGN KEY (name) REFERENCES Faculty(name) ON DELETE CASCADE,
-    FOREIGN KEY (class_id) REFERENCES Class(class_id) ON DELETE CASCADE
+    FOREIGN KEY (class_id, section_id) REFERENCES Section(class_id, section_id) ON DELETE CASCADE
 );
 
 -- Section
@@ -312,3 +313,75 @@ CREATE TABLE GRADE_CONVERSION(
     LETTER_GRADE CHAR(2) NOT NULL,
     NUMBER_GRADE DECIMAL(2,1)
 );
+
+
+
+-- 4.2: Trigger to check enrollment limit in the Student_take_class table
+CREATE OR REPLACE FUNCTION check_enrollment_limit()
+RETURNS TRIGGER AS $$
+DECLARE
+    current_enrollments INT;
+    max_limit INT;
+BEGIN
+    -- Get the current number of enrollments for the section
+    SELECT COUNT(*) INTO current_enrollments
+    FROM Student_take_class
+    WHERE class_id = NEW.class_id AND section_id = NEW.section_id;
+
+    -- Get the enrollment limit for the section
+    SELECT enrollment_limit INTO max_limit
+    FROM Section
+    WHERE class_id = NEW.class_id AND section_id = NEW.section_id;
+
+    -- Check if adding another enrollment would exceed the limit
+    IF current_enrollments >= max_limit THEN
+        RAISE EXCEPTION 'Enrollment limit of % for class %, section % has been reached. Enrollment rejected.', max_limit, NEW.class_id, NEW.section_id;
+    END IF;
+
+    -- Proceed with the insertion if under the limit
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_check_enrollment_limit
+BEFORE INSERT ON Student_take_class
+FOR EACH ROW
+EXECUTE PROCEDURE check_enrollment_limit();
+
+
+-- 5.1: CPQG view
+CREATE VIEW CPQG AS
+SELECT 
+    Class.course_id AS X, 
+    Section.professor AS Y, 
+    CONCAT(Class.year, ' ', Class.quarter) AS Z, 
+    stc.grade AS W,
+    COUNT(*) as count
+FROM 
+    Student_take_class stc
+JOIN 
+    Section ON stc.section_id = Section.section_id AND stc.class_id = Section.class_id 
+JOIN 
+    Class ON Section.class_id = Class.class_id
+GROUP BY 
+    X, Y, Z, W;
+
+-- 5.1: Trigger to update the CPQG view
+CREATE OR REPLACE FUNCTION update_CPQG() RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO CPQG (X, Y, Z, W, count)
+    VALUES (
+        (SELECT course_id FROM Class WHERE class_id = NEW.class_id),
+        (SELECT professor FROM Section WHERE section_id = NEW.section_id AND class_id = NEW.class_id),
+        (SELECT CONCAT(year, ' ', quarter) FROM Class WHERE class_id = NEW.class_id),
+        NEW.grade,
+        1
+    )
+    ON CONFLICT (X, Y, Z, W) DO UPDATE SET count = CPQG.count + 1;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_CPQG
+AFTER INSERT ON Student_take_class
+FOR EACH ROW EXECUTE PROCEDURE update_CPQG();

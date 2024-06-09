@@ -36,6 +36,8 @@
 
         String sql = "";
         String sqlGrade = "";
+
+        // query 3.a.2
         if (!professor.isEmpty() && !quarter.isEmpty() && !year.isEmpty()) {
             // Given course id, professor, quarter, and year
             sql = "SELECT CASE WHEN grade IN ('A+', 'A', 'A-') THEN 'A' " +
@@ -53,7 +55,9 @@
             pstmt.setInt(2, Integer.parseInt(courseId));
             pstmt.setString(3, quarter);
             pstmt.setInt(4, Integer.parseInt(year));
-        } else if (!professor.isEmpty()) {
+        }
+        // query 3.a.3
+        else if (!professor.isEmpty()) {
             // Given course id and professor
             sql = "SELECT CASE WHEN grade IN ('A+', 'A', 'A-') THEN 'A' " +
                 "WHEN grade IN ('B+', 'B', 'B-') THEN 'B' " +
@@ -69,7 +73,7 @@
             pstmt.setString(1, professor);
             pstmt.setInt(2, Integer.parseInt(courseId));
 
-            // define sqlGrade for calculating average grade later
+            // query 3.a.5, define sqlGrade for calculating average grade later
             sqlGrade = "SELECT grade, units " +
                         "FROM Student_take_class stc " +
                         "JOIN Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id " +
