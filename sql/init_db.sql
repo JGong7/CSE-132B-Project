@@ -312,3 +312,27 @@ CREATE TABLE GRADE_CONVERSION(
     LETTER_GRADE CHAR(2) NOT NULL,
     NUMBER_GRADE DECIMAL(2,1)
 );
+
+-- Trigger to check overlapping meetings
+CREATE OR REPLACE FUNCTION check_overlapping_meetings() RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM Meeting
+        WHERE class_id = NEW.class_id
+        AND section_id = NEW.section_id
+        AND ((NEW.time_start, NEW.time_end) OVERLAPS (time_start, time_end))
+        --AND ((NEW.date_start, NEW.date_end) OVERLAPS (date_start, date_end))
+        AND (days_of_week LIKE '%' || NEW.days_of_week || '%'
+             OR NEW.days_of_week LIKE '%' || days_of_week || '%')
+        AND meeting_id != NEW.meeting_id
+    ) THEN
+        RAISE EXCEPTION 'Overlapping meetings of a section are not allowed';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_overlapping_meetings_trigger
+BEFORE INSERT OR UPDATE ON Meeting
+FOR EACH ROW EXECUTE PROCEDURE check_overlapping_meetings();
