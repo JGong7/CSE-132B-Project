@@ -314,6 +314,11 @@ CREATE TABLE GRADE_CONVERSION(
     NUMBER_GRADE DECIMAL(2,1)
 );
 
+
+
+
+
+
 -- 4.1: Trigger to check overlapping meetings
 CREATE OR REPLACE FUNCTION check_overlapping_meetings() RETURNS TRIGGER AS $$
 BEGIN
@@ -389,6 +394,10 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER check_professor_schedule_trigger
 BEFORE INSERT OR UPDATE ON Meeting
 FOR EACH ROW EXECUTE PROCEDURE check_professor_schedule();
+
+
+
+
 
 
 -- 5.1: CPQG table and trigger
