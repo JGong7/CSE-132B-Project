@@ -357,7 +357,7 @@ BEGIN
     END IF;
 
     RETURN NEW;
-END;
+END;,
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_check_enrollment_limit
@@ -390,8 +390,22 @@ CREATE TRIGGER check_professor_schedule_trigger
 BEFORE INSERT OR UPDATE ON Meeting
 FOR EACH ROW EXECUTE PROCEDURE check_professor_schedule();
 
--- 5.1: CPQG view and trigger
-CREATE MATERIALIZED VIEW CPQG AS
+
+-- 5.1: CPQG table and trigger
+CREATE TABLE CPQG (
+    course_id INT,
+    professor VARCHAR(50),
+    quarter VARCHAR(50),
+    year INT,
+    grade CHAR(2),
+    grade_count INT,
+    PRIMARY KEY (course_id, professor, quarter, year, grade), 
+    FOREIGN KEY (professor) REFERENCES Faculty(name) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE
+);
+
+-- Initialize CPQG view
+INSERT INTO CPQG (course_id, professor, quarter, year, grade, grade_count)
 SELECT 
     c.course_id, s.professor, c.quarter, c.year, stc.grade, COUNT(*) as grade_count
 FROM 
@@ -426,11 +440,22 @@ FOR EACH ROW EXECUTE PROCEDURE update_CPQG();
 
 
 -- 5.2: CPG view and trigger
-CREATE MATERIALIZED VIEW CPG AS
+CREATE TABLE CPG (
+    course_id INT,
+    professor VARCHAR(50),
+    grade CHAR(2),
+    grade_count INT,
+    PRIMARY KEY (course_id, professor, grade),
+    FOREIGN KEY (professor) REFERENCES Faculty(name) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Course(course_id) ON DELETE CASCADE
+);
+
+-- Initialize CPG view
+INSERT INTO CPG (course_id, professor, grade, grade_count)
 SELECT 
     c.course_id, s.professor, stc.grade, COUNT(*) as grade_count
 FROM 
-    Student_take_class stc 
+    Student_take_class stc
 JOIN 
     Section s ON stc.section_id = s.section_id AND stc.class_id = s.class_id 
 JOIN 
@@ -438,6 +463,7 @@ JOIN
 GROUP BY 
     course_id, professor, grade;
 
+-- Trigger to update CPG view on insert
 CREATE OR REPLACE FUNCTION update_CPG() RETURNS TRIGGER AS $$
 BEGIN
     INSERT INTO CPG (course_id, professor, grade, grade_count)
